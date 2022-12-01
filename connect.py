@@ -15,9 +15,10 @@ def initial_connect() -> None:
 
         cur = conn.cursor()
 
-        sql = '''
+        sql_create_books = '''
+            DROP TABLE books CASCADE;
             CREATE TABLE books (
-                id INTEGER PRIMARY KEY,
+                book_id INTEGER PRIMARY KEY,s
                 title VARCHAR(511),
                 author VARCHAR(255),
                 publication_date DATE,
@@ -30,7 +31,26 @@ def initial_connect() -> None:
             )
         '''
 
-        cur.execute(sql)
+        sql_create_genre_groups = '''
+            DROP TABLE genre_groups;
+            CREATE TABLE genre_groups (
+                book_id INTEGER,
+                genre_id INTEGER,
+                FOREIGN KEY (book_id) REFERENCES books(book_id),
+                FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
+            )
+            '''
+        sql_create_genres = '''
+            DROP TABLE genres CASCADE;
+            CREATE TABLE genres (
+                genre_id INTEGER PRIMARY KEY,
+                genre_name VARCHAR(30)
+            )
+        '''
+
+        cur.execute(sql_create_books)
+        cur.execute(sql_create_genres)
+        cur.execute(sql_create_genre_groups)
         cur.close()
         conn.commit()
 
