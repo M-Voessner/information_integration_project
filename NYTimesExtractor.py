@@ -15,6 +15,7 @@ class NYTimesExtractor():
         response = requests.get(call)
         if (response.status_code == 200):
             response = response.json()['results']
+            print(response)
             for i in range(len(response)):
                 temp = {'review': None, 'review_url': None}
                 review = self.getReview(response[i]['url'])
