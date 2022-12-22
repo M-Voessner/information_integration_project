@@ -16,9 +16,9 @@ def initial_connect() -> None:
         cur = conn.cursor()
 
         sql_create_books = '''
-            DROP TABLE books CASCADE;
+            DROP TABLE IF EXISTS books CASCADE;
             CREATE TABLE books (
-                book_id INTEGER PRIMARY KEY,s
+                book_id INTEGER PRIMARY KEY,
                 title VARCHAR(511),
                 author VARCHAR(255),
                 publication_date DATE,
@@ -32,7 +32,7 @@ def initial_connect() -> None:
         '''
 
         sql_create_genre_groups = '''
-            DROP TABLE genre_groups;
+            DROP TABLE IF EXISTS genre_groups;
             CREATE TABLE genre_groups (
                 book_id INTEGER,
                 genre_id INTEGER,
@@ -41,7 +41,7 @@ def initial_connect() -> None:
             )
             '''
         sql_create_genres = '''
-            DROP TABLE genres CASCADE;
+            DROP TABLE IF EXISTS genres CASCADE;
             CREATE TABLE genres (
                 genre_id INTEGER PRIMARY KEY,
                 genre_name VARCHAR(30)
