@@ -1,10 +1,15 @@
 from flask import Flask, jsonify, request
 import psycopg2 as gres
 from config import config
+from flask_cors import CORS
   
 # creating a Flask app
 app = Flask(__name__)
+CORS(app)
   
+@app.route('/', methods = ['GET'])
+def home():
+    return jsonify({'routes': ['all_books', 'books'], 'args': ['title', 'author']})
 # on the terminal type: curl http://127.0.0.1:5000/
 # returns hello world when we use GET.
 # returns the data that we send when we use POST.
