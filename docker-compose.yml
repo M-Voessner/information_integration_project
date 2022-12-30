@@ -1,0 +1,76 @@
+version: '3.9'
+
+services:
+  # Frontend
+  front-end:
+    container_name: front-end
+    hostname: localhost
+    build:
+      context: ./front-end/
+      dockerfile: Dockerfile
+      args:
+        ENV: dev
+    image: front-end:latest
+    ports:
+      - 4200:80
+    command: [nginx, '-g', 'daemon off;']
+    restart: unless-stopped
+    networks:
+      - postgres
+
+  # Backend
+  backend:
+    container_name: backend
+    hostname: localhost
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: backend:latest
+    ports:
+      - 5000:5000
+    restart: unless-stopped
+    networks:
+      - postgres
+    depends_on:
+      - postgres
+    
+  postgres:
+    container_name: postgres_container
+    hostname: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_HOST: localhost
+      POSTGRES_PASSWORD: 1234
+      PGDATA: /data/postgres
+    volumes:
+       - postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - postgres
+    restart: unless-stopped
+  
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: 1234
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    ports:
+      - 5050:80
+    networks:
+      - postgres
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+volumes:
+    postgres-data:
+    pgadmin:
+networks:
+  postgres:
+    driver: bridge

@@ -2,10 +2,10 @@ import psycopg2 as gres
 
 # establish connection to postgres
 conn = gres.connect(
-    database="postgres", 
-    user='postgres', 
-    password='admin', 
-    host='127.0.0.1', 
+    dbname ="postgres", 
+    user='postgres',
+    host='postgres',
+    password='1234',
     port='5432'
 )
 
@@ -14,7 +14,7 @@ conn.autocommit = True
 # Get Cursor and create DB for integration project
 cursor = conn.cursor()
 
-sql = '''CREATE DATABASE BookBase
+sql = '''CREATE DATABASE Books
 WITH
     OWNER = postgres
     TEMPLATE = template1

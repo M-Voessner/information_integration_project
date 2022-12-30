@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from flask import Flask, jsonify, request
 import psycopg2 as gres
 from config import config
@@ -10,11 +11,10 @@ CORS(app)
 @app.route('/', methods = ['GET'])
 def home():
     return jsonify({'routes': ['all_books', 'books'], 'args': ['title', 'author']})
-# on the terminal type: curl http://127.0.0.1:5000/
-# returns hello world when we use GET.
-# returns the data that we send when we use POST.
+
 @app.route('/all_books', methods = ['GET'])
 def allBooks():
+    conn = None
     try:
         sql = """SELECT * FROM books"""
         params = config()
@@ -43,13 +43,9 @@ def allBooks():
         if conn is not None:
             conn.close()
   
-  
-# A simple function to calculate the square of a number
-# the number to be squared is sent in the URL when we use GET
-# on the terminal type: curl http://127.0.0.1:5000 / home / 10
-# this returns 100 (square of 10)
 @app.route('/books', methods = ['GET'])
 def disp():
+    conn = None
     try:
         args = request.args
         title = args.get('title')
@@ -88,6 +84,6 @@ def disp():
   
 # driver function
 if __name__ == '__main__':
-        
+    print('Test')
 
     app.run(debug = True)
