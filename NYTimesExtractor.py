@@ -2,11 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import os
-import json
 
 class NYTimesExtractor():
-    def __init__(self, apiKey):
-        self.url = 'https://api.nytimes.com/svc/books/v3/reviews.json?api-key=' + apiKey
+    def __init__(self):
+        self.url = 'https://api.nytimes.com/svc/books/v3/reviews.json?api-key=' + 'pBmtDGDaAMjxj1HhIzQoneHvdPMJlVxD'
         self.data = []
         
     def getReviewWithTitle(self, title):
@@ -18,8 +17,8 @@ class NYTimesExtractor():
             print(response)
             for i in range(len(response)):
                 temp = {'review': None, 'review_url': None}
-                review = self.getReview(response[i]['url'])
-                temp['review'] = review
+                #review = self.getReview(response[i]['url'])
+                temp['review'] = None
                 temp['review_url'] = response[i]['url']
                 self.data.append(temp)
         else:
@@ -33,8 +32,8 @@ class NYTimesExtractor():
             response = response.json()['results']
             for i in range(len(response)):
                 temp = {'review': None, 'review_url': None}
-                review = self.getReview(response[i]['url'])
-                temp['review'] = review
+                #review = self.getReview(response[i]['url'])
+                temp['review'] = None
                 temp['review_url'] = response[i]['url']
                 self.data.append(temp)
         else:
@@ -52,7 +51,7 @@ class NYTimesExtractor():
         
 def main():
     #Api Key dont steal pls pBmtDGDaAMjxj1HhIzQoneHvdPMJlVxD
-    extractor = NYTimesExtractor('pBmtDGDaAMjxj1HhIzQoneHvdPMJlVxD')
+    extractor = NYTimesExtractor()
     extractor.getReviewWithTitle('the witches')
     print(extractor.data)
 if __name__ == '__main__':

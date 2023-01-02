@@ -24,7 +24,7 @@ export class AppComponent {
   bookAuthor?: string;
   url = 'http://localhost:5000/';
   books?: BookResponse[];
-  displayedColumns: string[] = ['title', 'author', 'rating', 'review'];
+  displayedColumns: string[] = ['title', 'author', 'rating', 'review', 'review_url'];
 
   constructor(private http: HttpClient) {}
   

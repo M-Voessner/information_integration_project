@@ -13,7 +13,7 @@ try:
     cur = conn.cursor()
 
     sql = """INSERT INTO books(book_id,title,author,publication_date,review,review_url,page_count,price,average_rating,cover)
-    VALUES(1,'The Witches', 'Dal', TIMESTAMP '2011-05-16 15:36:38', '', '', 0,0,0,'')
+    VALUES(2,'The Witches', 'Dal', TIMESTAMP '2011-05-16 15:36:38', Null, Null, 0,0,0,'')
     """
 
     cur.execute(sql)

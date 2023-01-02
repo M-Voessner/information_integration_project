@@ -24,6 +24,7 @@ COPY database.ini /app
 COPY create_integrated_database.py /app
 COPY connect.py /app
 COPY main.py /app
+COPY NYTimesExtractor.py /app
 # How you install your python packages may differ
 RUN pip install -r requirements.txt
 

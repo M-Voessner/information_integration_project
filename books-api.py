@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 import psycopg2 as gres
 from config import config
 from flask_cors import CORS
+from NYTimesExtractor import NYTimesExtractor
   
 # creating a Flask app
 app = Flask(__name__)
@@ -47,14 +48,17 @@ def allBooks():
 def disp():
     conn = None
     try:
+        extractor = NYTimesExtractor()
         args = request.args
         title = args.get('title')
         author = args.get('author')
         if (title):
             term = title
+            extractor.getReviewWithTitle(term)
             sql = """SELECT * FROM books WHERE title = %s"""
         if (author):
             term = author
+            extractor.getReviewWithAuthor(term)
             sql = """SELECT * FROM books WHERE author = %s"""
         params = config()
         conn = gres.connect(**params)
@@ -69,12 +73,22 @@ def disp():
             temp['title'] = row[1]
             temp['author'] = row[2]
             temp['publication_date'] = row[3]
-            temp['review'] = row[4]
-            temp['review_url'] = row[5]
+            if (row[5] is not None):
+                temp['review'] = row[4]
+                temp['review_url'] = row[5]
+            else:
+                temp['review'] = extractor.data[0]['review'] if extractor.data[0] else None
+                temp['review_url'] = extractor.data[0]['review_url'] if extractor.data[0] else None
             temp['page_count'] = row[6]
             temp['price'] = row[7]
             temp['rating'] = row[8]
             result.append(temp)
+            if(row[5] == None):
+                #Update review_url in db
+                cur.execute("""
+                            UPDATE books 
+                            SET review_url = %s
+                            WHERE book_id = %s""",(extractor.data[0]['review_url'], row[0],))
         return jsonify(result)
     except (Exception, gres.DatabaseError) as error:
         print('FAILED: %s' % error, flush=True)
