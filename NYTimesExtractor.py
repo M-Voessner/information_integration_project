@@ -14,11 +14,10 @@ class NYTimesExtractor():
         response = requests.get(call)
         if (response.status_code == 200):
             response = response.json()['results']
-            print(response)
             for i in range(len(response)):
                 temp = {'review': None, 'review_url': None}
-                #review = self.getReview(response[i]['url'])
-                temp['review'] = None
+                review = self.getReview(response[i]['url'])
+                temp['review'] = review
                 temp['review_url'] = response[i]['url']
                 self.data.append(temp)
         else:
@@ -32,20 +31,21 @@ class NYTimesExtractor():
             response = response.json()['results']
             for i in range(len(response)):
                 temp = {'review': None, 'review_url': None}
-                #review = self.getReview(response[i]['url'])
-                temp['review'] = None
+                review = self.getReview(response[i]['url'])
+                temp['review'] = review
                 temp['review_url'] = response[i]['url']
                 self.data.append(temp)
         else:
             print('Error: ' + response.reason)
             
     def getReview(self, url):
-        os.environ['MOZ_HEADLESS'] = '1'
-        driver = webdriver.Firefox()
-        driver.get(url)
-        html = driver.page_source
-        soup = BeautifulSoup(html, 'html.parser')
-        return soup.text
+        headers = {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Mobile Safari/537.36'}
+        page = requests.get(url, headers=headers)
+        if (page.status_code == 200):
+            soup = BeautifulSoup(page.content, 'html.parser')
+            return soup.get_text()
+        else:
+            return None
         
         
         

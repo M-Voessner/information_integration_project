@@ -67,18 +67,15 @@ def disp():
         cur.execute(sql, (term,))
         books = cur.fetchall()
         result = []
+        
         for row in books:
             temp = {}
             temp['book_id'] = row[0]
             temp['title'] = row[1]
             temp['author'] = row[2]
             temp['publication_date'] = row[3]
-            if (row[5] is not None):
-                temp['review'] = row[4]
-                temp['review_url'] = row[5]
-            else:
-                temp['review'] = extractor.data[0]['review'] if extractor.data[0] else None
-                temp['review_url'] = extractor.data[0]['review_url'] if extractor.data[0] else None
+            temp['review'] = extractor.data[0]['review'] if extractor.data[0] else row[4]
+            temp['review_url'] = extractor.data[0]['review_url'] if extractor.data[0] else row[5]
             temp['page_count'] = row[6]
             temp['price'] = row[7]
             temp['rating'] = row[8]

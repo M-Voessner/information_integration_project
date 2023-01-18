@@ -8,6 +8,7 @@ import {MatButtonModule} from '@angular/material/button';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatTableModule} from '@angular/material/table'
+import { MatSortModule } from '@angular/material/sort';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import {MatTableModule} from '@angular/material/table'
     MatIconModule,
     MatButtonModule,
     HttpClientModule,
-    MatTableModule
+    MatTableModule,
+    MatSortModule 
   ],
   providers: [],
   bootstrap: [AppComponent]
