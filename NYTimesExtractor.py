@@ -14,6 +14,7 @@ class NYTimesExtractor():
         response = requests.get(call)
         if (response.status_code == 200):
             response = response.json()['results']
+            print(response)
             for i in range(len(response)):
                 temp = {'review': None, 'review_url': None}
                 review = self.getReview(response[i]['url'])
@@ -53,6 +54,5 @@ def main():
     #Api Key dont steal pls pBmtDGDaAMjxj1HhIzQoneHvdPMJlVxD
     extractor = NYTimesExtractor()
     extractor.getReviewWithTitle('the witches')
-    print(extractor.data)
 if __name__ == '__main__':
     main()

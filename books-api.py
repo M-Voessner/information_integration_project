@@ -8,7 +8,19 @@ from NYTimesExtractor import NYTimesExtractor
 # creating a Flask app
 app = Flask(__name__)
 CORS(app)
-  
+
+
+
+def getReviewByTitle(list, term):
+    for i in list:
+        if ('title' in i.keys()):
+            if (i['title']== term):
+                return i
+        elif ('book_title' in i.keys()):
+            if (i['book_title'] ==term):
+                return i
+    return {'review': None, 'review_url': None}
+      
 @app.route('/', methods = ['GET'])
 def home():
     return jsonify({'routes': ['all_books', 'books'], 'args': ['title', 'author']})
@@ -59,7 +71,9 @@ def disp():
         if (author):
             term = author
             extractor.getReviewWithAuthor(term)
+           
             sql = """SELECT * FROM books WHERE author = %s"""
+        print(extractor.data)
         params = config()
         conn = gres.connect(**params)
         conn.autocommit = True
@@ -74,8 +88,8 @@ def disp():
             temp['title'] = row[1]
             temp['author'] = row[2]
             temp['publication_date'] = row[3]
-            temp['review'] = extractor.data[0]['review'] if extractor.data[0] else row[4]
-            temp['review_url'] = extractor.data[0]['review_url'] if extractor.data[0] else row[5]
+            temp['review'] = getReviewByTitle(extractor.data, row[1])['review']
+            temp['review_url'] = getReviewByTitle(extractor.data, row[1])['review_url']
             temp['page_count'] = row[6]
             temp['price'] = row[7]
             temp['rating'] = row[8]
