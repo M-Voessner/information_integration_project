@@ -28,7 +28,7 @@ class GoodReads():
         """ Initializes data member to empty list """
         self.data = []
 
-    def load_good_reads(self, file='books_good_read.csv'):
+    def load_good_reads(self, file='.\data_sources\books_good_reads.csv'):
         """ Reads data from csv file and expects the data to follow the schema of GoodReads """
         reader = None
         out = []
