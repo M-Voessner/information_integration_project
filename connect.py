@@ -19,9 +19,13 @@ def initial_connect() -> None:
             DROP TABLE IF EXISTS books CASCADE;
             CREATE TABLE books (
                 book_id INTEGER PRIMARY KEY,
+                ISBN13 VARCHAR(13),
                 title VARCHAR(511),
                 author VARCHAR(255),
                 publication_date DATE,
+                publisher VARCHAR(255),
+                language VARCHAR(20),
+                description TEXT,
                 review TEXT,
                 review_url VARCHAR(511),
                 page_count INTEGER,
