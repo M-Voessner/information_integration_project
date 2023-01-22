@@ -1,6 +1,9 @@
 import pandas as pd
 import re
 
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 def create_genre_keys(df):
     # Split genres column into lists 
     df['generes'] = df['generes'].str.replace(r'\&amp', '').str.replace(r' ', '').str.split(',')
@@ -39,6 +42,8 @@ def format_date(df):
     #Convert strings to YYYY-MM-DD
     df['published_date'] = pd.to_datetime(df['published_date'], format="%m,%d,%Y")
 
+    # Rename to fit global schema
+    df = df.rename(columns={"published_date":"publication_date"})
     return df
 
 #The price value in Google Books data set is given for SAR (Saudi Riyal) currency, we are converting it to EUR (around 1 SAR = 0.25 EUR)
@@ -49,13 +54,34 @@ def convert_price(df):
 
 #Some rows contain invalid ISBN values
 def filter_ISBNs(df):
-    df['ISBN'] = df['ISBN'].apply(lambda x: x if x.isnumeric() else '')
+    df['ISBN'] = df['ISBN'].apply(lambda x: x if x.isnumeric() else 0)
+    # Change ISBN format to int
+    df['ISBN'] = df['ISBN'].astype('int64')
+    df = df.rename(columns={"ISBN":"isbn13"})
+    return df
+
+def change_language_naming_convention(df):
+    # All language values are 'English', we set it to 'eng', as in the other data source
+    df['language'] = 'eng'
+    return df
+
+def cast_vote_quantity_to_int(df):
+    df['voters'] = df['voters'].str.replace(',', '').fillna(0).astype('int64')
+    df = df.rename(columns={"voters":"ratings_count"})
     return df
 
 def clean_dataset(df):
     df = format_date(df)
     df = convert_price(df)
     df = filter_ISBNs(df)
+    df = change_language_naming_convention(df)
+    df = cast_vote_quantity_to_int(df)
+
+    # Change rating column name to fit global schema
+    df = df.rename(columns={"rating":"average_user_rating"})
+    # Drop genres column, since there's a special table for that
+    df = df.drop('generes',axis=1)
+
     return df
 
 def create_genre_groups(df,genres):
@@ -77,26 +103,22 @@ def create_genre_groups(df,genres):
 
 def read_GoogleBooks_file():
 
-    df = pd.read_csv('.\data_sources\google_books_1299.csv')
+    df = pd.read_csv('.\data_sources\google_books_1299.csv',encoding='utf8')
 
-    #print(df['published_date'])
-    df = clean_dataset(df)
-    #print(df['generes'])
+    #df = clean_dataset(df)
+    #df = df.rename(columns={"Unnamed: 0":"bookID"})
+    
     genres = create_genre_keys(df)
 
     genre_groups = create_genre_groups(df,genres)
     
     # This is for testing purposes   
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.max_rows', None)
-    #df = df.sort_values(by=['title','ISBN'])
-    print(df.head())
+    #pd.set_option('display.max_columns', None)
+    #pd.set_option('display.max_rows', None)
 
-    #print(df['published_date'])
-    #print(df['generes'])
-    #print(genres)
-    #print(genre_groups)
+    df = clean_dataset(df)
+    df = df.rename(columns={"Unnamed: 0":"bookID"})
+    return df
 
 
-read_GoogleBooks_file()
 
