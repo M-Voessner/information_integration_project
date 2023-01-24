@@ -14,6 +14,7 @@ interface BookResponse {
   page_count: number | null;
   price: number| null ;
   rating: number | null;
+  genre: string | null;
 }
 
 @Component({
@@ -30,16 +31,24 @@ interface BookResponse {
 export class AppComponent {
   bookTitle?: string;
   bookAuthor?: string;
+  bookRating?: number;
+  bookGenre?: string;
+  options = [
+    {value: 'Thriller', viewValue: 'Thriller'},
+    {value: 'Comedy', viewValue: 'Comedy'},
+    {value: 'Self-Help', viewValue: 'Self-Help'},
+    {value: 'Action', viewValue: 'Action'}
+  ];
   url = 'http://localhost:5000/';
   books: BookResponse[] = [];
 
   sortedBooks: BookResponse[];
-  displayedColumns: string[] = ['title', 'author', 'rating', 'review', 'review_url', 'page_count', 'price', 'publication_date'];
+  displayedColumns: string[] = ['title', 'author', 'rating','genre', 'review', 'review_url', 'page_count', 'price', 'publication_date'];
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand']
   expandedReview?: BookResponse | null;
 
   constructor(private http: HttpClient) {
-    this.books?.push({author: 'Author', book_id: 23, page_count: 34, price: 23, publication_date: '23-23-12', rating: 2, review: `THE WITCHES, By Roald Dahl. Illustrated by Quentin Blake. 202 pp. New York: Farrar, Straus & Giroux. $10.95. (Ages 9 and Up)
+    this.books?.push({author: 'Roald Dahl', genre: 'Thriller', book_id: 23, page_count: 120, price: 20, publication_date: '2002.01.13', rating: 8.0, review: `THE WITCHES, By Roald Dahl. Illustrated by Quentin Blake. 202 pp. New York: Farrar, Straus & Giroux. $10.95. (Ages 9 and Up)
 
     ROALD DAHL knows every bit as well as Bruno Bettelheim that children love the macabre, the terrifying, the mythic. In his latest book, ''The Witches,'' a 7-year-old orphan boy, cared for by his Norwegian grandmother, discovers the true nature of witches and then has the misfortune to be transformed into a mouse by the Grand High Witch of All the World - a horrifying creature with a bride-of-Frankenstein face concealed behind the mask of a pretty young woman. In this book, witches are characterized as figures of horror - baldheaded, claw-fingered, toeless women, their deformities hidden beneath pretty masks, fancy wigs, white gloves and pointy shoes.
     
@@ -51,11 +60,11 @@ export class AppComponent {
     
     The boy doesn't mind being a mouse, he says, because ''It doesn't matter who you are or what you look like so long as somebody loves you.'' And, indeed, the hero of this tale is loved. Whether as a boy or a mouse, he experiences the most extraordinary and unqualified approval from his grandmother - the sort of unconditional love adults and children alike crave.
     
-    ''The Witches'' is finally a love story - the story of a little boy who loves his grandmother so utterly (and she him) that they are looking forward to spending their last years few exterminating the witches of the world together. It is a curious sort of tale but an honest one, which deals with matters of crucial importance to children: smallness, the existence of evil in the world, mourning, separation, death. The witches I've written about are far more benevolent figures, yet perhaps that is the point of witches - they are projections of the human unconscious and so can have many incarnations.`, review_url: 'https://www.nytimes.com/1983/11/13/books/the-boy-who-became-a-mouse.html', title: 'test'});
-    this.books?.push({author: 'Author', book_id: 24, page_count: 34, price: 23, publication_date: '23-23-12', rating: 2, review: 'Toll', review_url: 'https://www.nytimes.com/1983/11/13/books/the-boy-who-became-a-mouse.html', title: 'test'})
-    this.books?.push({author: 'Author', book_id: 25, page_count: 34, price: 2, publication_date: '23-23-12', rating: 2, review: 'Toll', review_url: 'https://www.nytimes.com/1983/11/13/books/the-boy-who-became-a-mouse.html', title: 'test'})
-    this.books?.push({author: 'Author', book_id: 26, page_count: 34, price: 21, publication_date: '23-23-12', rating: 2, review: 'Toll', review_url: 'https://www.nytimes.com/1983/11/13/books/the-boy-who-became-a-mouse.html', title: 'test'})
-    this.books?.push({author: 'Author', book_id: 27, page_count: 34, price: 25, publication_date: '23-23-12', rating: 2, review: 'Toll', review_url: 'https://www.nytimes.com/1983/11/13/books/the-boy-who-became-a-mouse.html', title: 'test'})
+    ''The Witches'' is finally a love story - the story of a little boy who loves his grandmother so utterly (and she him) that they are looking forward to spending their last years few exterminating the witches of the world together. It is a curious sort of tale but an honest one, which deals with matters of crucial importance to children: smallness, the existence of evil in the world, mourning, separation, death. The witches I've written about are far more benevolent figures, yet perhaps that is the point of witches - they are projections of the human unconscious and so can have many incarnations.`, review_url: 'https://www.nytimes.com/1983/11/13/books/the-boy-who-became-a-mouse.html', title: 'The Witches'});
+    this.books?.push({author: 'Dale Carnegie',genre: 'Self-Help', book_id: 24, page_count: 320, price: 51, publication_date: '2013.06.11', rating: 8.6, review: null, review_url: null, title: 'How To Win Friends and Influence People'})
+    this.books?.push({author: 'Laura Levine',genre: 'Thriller', book_id: 25, page_count: 204, price: 29.90, publication_date: '2015.09.23', rating: 8.0, review: null, review_url: null, title: 'Death of a Bachelorette'})
+    this.books?.push({author: 'Agatha Christie',genre: 'Detective and Mystery', book_id: 26, page_count: 207, price: 19.80, publication_date: '1985.06.15', rating: 9.2, review: null, review_url: 'https://www.nytimes.com/2017/11/17/books/review/murder-orient-express-agatha-christie-audiobook-kenneth-branagh.html', title: 'Murder on the Orient Express'})
+    this.books?.push({author: 'Ernest Cline',genre: 'Action', book_id: 27, page_count: 34, price: 25, publication_date: '2011.08.15', rating: 9.2, review: 'Ernest Clines “Ready Player One” is a book filled with references to video games, virtual reality, 80s pop-culture trivia, geek heroes like ', review_url: 'http://www.nytimes.com/2011/08/15/books/ready-player-one-by-ernest-cline-review.html', title: 'Ready Player One'})
 
     this.sortedBooks = this.books?.slice();
   }
