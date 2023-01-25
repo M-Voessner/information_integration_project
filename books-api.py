@@ -66,21 +66,48 @@ def disp():
         args = request.args
         title = args.get('title')
         author = args.get('author')
+        rating = args.get('rating')
+        genre = args.get('genre')
+        date = args.get('date')
+        page_count = args.get('page-count')
+        price = args.get('price')
+        print(args)
+        sql = """SELECT * FROM books"""
+        where = []
+        sqlparams = {}
         if (title):
             term = title
-            extractor.getReviewWithTitle(term)
-            sql = """SELECT * FROM books WHERE title = %s"""
+            #extractor.getReviewWithTitle(term)
+            where.append("""title = %(title)s""")
+            sqlparams['title'] = title
         if (author):
             term = author
-            extractor.getReviewWithAuthor(term)
-           
-            sql = """SELECT * FROM books WHERE author = %s"""
-        print(extractor.data)
+            #extractor.getReviewWithAuthor(term)
+            where.append("""author = %(author)s""")
+            sqlparams['author']=author
+        if (rating):
+            where.append("""average_rating = %(rating)s""")
+            sqlparams['rating']=rating
+        if (genre):
+            where.append("""genre = %(genre)s""")
+            sqlparams['genre']=genre
+        if (date):
+            where.append("""publication_date = %(date)s""")
+            sqlparams['date']=date
+        if (page_count):
+            where.append("""page_count = %(page_count)s""")
+            sqlparams['page_count']=page_count
+        if (price):
+            where.append("""price = %(price)s""")
+            sqlparams['price']=price
+        if where:
+            sql = '{} WHERE {}'.format(sql, ' AND '.join(where))
+        _sql = sql,sqlparams
         params = config()
         conn = gres.connect(**params)
         conn.autocommit = True
         cur = conn.cursor()
-        cur.execute(sql, (term,))
+        cur.execute(*_sql)
         books = cur.fetchall()
         result = []
         

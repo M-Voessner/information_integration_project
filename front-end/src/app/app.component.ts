@@ -55,14 +55,20 @@ export class AppComponent {
   
   async search() {
     
-    let url = this.url;
+    let url = this.url + 'books?';
     if (this.bookTitle) {
-      url += 'books?title=' + this.bookTitle;
-    } else if (this.bookAuthor) {
-      url += 'books?author=' + this.bookAuthor;
-    } else {
-      url += 'all_books'
+      url += 'title=' + this.bookTitle + '&';
     }
+    if (this.bookAuthor) {
+      url += 'author=' + this.bookAuthor + '&';
+    } 
+    if (this.bookGenre) {
+      url += 'genre=' + this.bookGenre + '&';
+    }
+    if (this.bookRating) {
+      url += 'rating=' + this.bookRating + '&';
+    } 
+    url = url.slice(0,-1)
     this.http.get<BookResponse[]>(url).subscribe(res => {
       console.log(res);
       this.books = res;
