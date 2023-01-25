@@ -27,7 +27,8 @@ def initial_connect() -> None:
                 page_count INTEGER,
                 price NUMERIC(8, 2),
                 average_rating NUMERIC(4,2),
-                cover VARCHAR(511)
+                cover VARCHAR(511),
+                genre VARCHAR(30)
             )
         '''
 

@@ -19,7 +19,7 @@ def getReviewByTitle(list, term):
         elif ('book_title' in i.keys()):
             if (i['book_title'] ==term):
                 return i
-    return {'review': None, 'review_url': None}
+    return {'review': None, 'review_url': None, 'summary': None}
       
 @app.route('/', methods = ['GET'])
 def home():
@@ -48,6 +48,8 @@ def allBooks():
             temp['page_count'] = row[6]
             temp['price'] = row[7]
             temp['rating'] = row[8]
+            temp['cover']= row[9]
+            temp['genre'] = row[10]
             result.append(temp)
         return jsonify(result)
     except (Exception, gres.DatabaseError) as error:
@@ -88,18 +90,23 @@ def disp():
             temp['title'] = row[1]
             temp['author'] = row[2]
             temp['publication_date'] = row[3]
-            temp['review'] = getReviewByTitle(extractor.data, row[1])['review']
-            temp['review_url'] = getReviewByTitle(extractor.data, row[1])['review_url']
+            review = getReviewByTitle(extractor.data, row[1])
+            temp['review'] = review['review']
+            temp['review_url'] = review['review_url']
             temp['page_count'] = row[6]
             temp['price'] = row[7]
             temp['rating'] = row[8]
+            temp['cover']= row[9]
+            temp['genre'] = row[10]
+            if (temp['review'] == None):
+                temp['review'] = review['summary']
             result.append(temp)
             if(row[5] == None):
                 #Update review_url in db
                 cur.execute("""
                             UPDATE books 
-                            SET review_url = %s
-                            WHERE book_id = %s""",(extractor.data[0]['review_url'], row[0],))
+                            SET review_url = %s, review = %s
+                            WHERE book_id = %s""",(temp['review_url'], temp['review'], row[0],))
         return jsonify(result)
     except (Exception, gres.DatabaseError) as error:
         print('FAILED: %s' % error, flush=True)
