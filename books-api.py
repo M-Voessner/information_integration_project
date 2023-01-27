@@ -57,12 +57,93 @@ def allBooks():
     finally:
         if conn is not None:
             conn.close()
+            
+@app.route('/all_titles', methods = ['GET'])
+def alltitles():
+    conn = None
+    try:
+        sql = """SELECT title FROM books"""
+        params = config()
+        conn = gres.connect(**params)
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute(sql)
+        books = cur.fetchall()
+        result = []
+        for row in books:
+            result.append(row[0])
+        return jsonify(result)
+    except (Exception, gres.DatabaseError) as error:
+        print('FAILED: %s' % error, flush=True)
+    finally:
+        if conn is not None:
+            conn.close()
+            
+@app.route('/all_authors', methods = ['GET'])
+def allAuthors():
+    conn = None
+    try:
+        sql = """SELECT author FROM books"""
+        params = config()
+        conn = gres.connect(**params)
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute(sql)
+        books = cur.fetchall()
+        result = []
+        for row in books:
+            result.append(row[0])
+        return jsonify(result)
+    except (Exception, gres.DatabaseError) as error:
+        print('FAILED: %s' % error, flush=True)
+    finally:
+        if conn is not None:
+            conn.close()
   
+  
+@app.route('/get_review', methods = ['GET'])
+def getReview():
+    args = request.args
+    book_id = args.get('book_id')
+    extractor = NYTimesExtractor()
+    
+    
+    conn = None
+    try:
+        sql = """SELECT * FROM books WHERE book_id = %s"""
+        params = config()
+        conn = gres.connect(**params)
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute(sql,(book_id,))
+        books = cur.fetchall()
+        review = {'review': None, 'review_url': None, 'summary': None}
+        for row in books:
+            if (row[5] is not None):
+                return jsonify({'review': row[4], 'review_url': row[5]})
+            else:
+                extractor.getReviewWithTitle(row[1])
+                review = getReviewByTitle(extractor.data, row[1])
+                print(extractor.data)
+                print(review)
+                if (review['review'] == None):
+                    review['review'] = review['summary']
+                if (review['review_url'] is not None):
+                    cur.execute("""
+                        UPDATE books 
+                        SET review_url = %s, review = %s
+                        WHERE book_id = %s""",(review['review_url'], review['review'], book_id,))
+        return jsonify(review)
+    except (Exception, gres.DatabaseError) as error:
+        print('FAILED: %s' % error, flush=True)
+    finally:
+        if conn is not None:
+            conn.close()
+
 @app.route('/books', methods = ['GET'])
 def disp():
     conn = None
     try:
-        extractor = NYTimesExtractor()
         args = request.args
         title = args.get('title')
         author = args.get('author')
@@ -76,13 +157,9 @@ def disp():
         where = []
         sqlparams = {}
         if (title):
-            term = title
-            #extractor.getReviewWithTitle(term)
             where.append("""title = %(title)s""")
             sqlparams['title'] = title
         if (author):
-            term = author
-            #extractor.getReviewWithAuthor(term)
             where.append("""author = %(author)s""")
             sqlparams['author']=author
         if (rating):
@@ -117,23 +194,14 @@ def disp():
             temp['title'] = row[1]
             temp['author'] = row[2]
             temp['publication_date'] = row[3]
-            review = getReviewByTitle(extractor.data, row[1])
-            temp['review'] = review['review']
-            temp['review_url'] = review['review_url']
+            temp['review'] = row[4]
+            temp['review_url'] = row[5]
             temp['page_count'] = row[6]
             temp['price'] = row[7]
             temp['rating'] = row[8]
             temp['cover']= row[9]
             temp['genre'] = row[10]
-            if (temp['review'] == None):
-                temp['review'] = review['summary']
             result.append(temp)
-            if(row[5] == None):
-                #Update review_url in db
-                cur.execute("""
-                            UPDATE books 
-                            SET review_url = %s, review = %s
-                            WHERE book_id = %s""",(temp['review_url'], temp['review'], row[0],))
         return jsonify(result)
     except (Exception, gres.DatabaseError) as error:
         print('FAILED: %s' % error, flush=True)

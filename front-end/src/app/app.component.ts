@@ -1,7 +1,9 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Sort } from '@angular/material/sort';
+import { map, Observable, startWith } from 'rxjs';
 
 
 interface BookResponse {
@@ -28,7 +30,16 @@ interface BookResponse {
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ])]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  formControlTitle = new FormControl('')
+  formControlAuthor = new FormControl('')
+  titleOptions: string[] = []
+  authorOptions: string[] = []
+  loading = false;
+
+  filteredTitleOptions?: Observable<string[]>;
+  filteredAuthorOptions?: Observable<string[]>;
+
   bookTitle?: string;
   bookAuthor?: string;
   bookRating?: number;
@@ -48,13 +59,65 @@ export class AppComponent {
   expandedReview?: BookResponse | null;
 
   constructor(private http: HttpClient) {
-   
+    this.books?.push({author: 'Roald Dahl', genre: 'Thriller', book_id: 23, page_count: 120, price: 20, publication_date: '2002.01.13', rating: 8.0, review: `THE WITCHES, By Roald Dahl. Illustrated by Quentin Blake. 202 pp. New York: Farrar, Straus & Giroux. $10.95. (Ages 9 and Up)
+    ROALD DAHL knows every bit as well as Bruno Bettelheim that children love the macabre, the terrifying, the mythic. In his latest book, ''The Witches,'' a 7-year-old orphan boy, cared for by his Norwegian grandmother, discovers the true nature of witches and then has the misfortune to be transformed into a mouse by the Grand High Witch of All the World - a horrifying creature with a bride-of-Frankenstein face concealed behind the mask of a pretty young woman. In this book, witches are characterized as figures of horror - baldheaded, claw-fingered, toeless women, their deformities hidden beneath pretty masks, fancy wigs, white gloves and pointy shoes.
+    
+    Although I have written a book arguing for the reha Erica Jong is the author of ''Witches.'' Her most recent book of poetry is ''Ordinary Miracles.'' bilitation of the witch as a descendant of the great mother goddess of the ancient world, I can certainly see what Roald Dahl is up to here. His witches must be horrifying creatures to underline his hero's heroism. For ''The Witches'' is a heroic tale. A schoolboy is transformed into a tiny mouse (with, however, the mind and language of a very bright child), and through his extraordinary bravery, he manages to save all the children of England from the same fate.
+    
+    Under the surface of this deceptively simple tale, which whizzes along and is great fun to read, lurks an interesting metaphor. This is the equation of childhood with mousedom. A child may be smaller than all the witchy, horrifying adults, but he can certainly outwit them. He is tiny and crushable, but he is also fast and well-nigh invisible. With the assistance of his benevolent Grandmamma (who hoists him up to things he can't reach, secretes him in her handbag, feeds and cuddles him), he is able to outsmart nearly the whole adult world.
+    
+    ''The Witches'' is also, in its way, a parable about the fear of death as separation and a child's mourning for the loss of his parents. Mr. Dahl's hero is happy when he is turned into a mouse - not only because of his speed and dexterity (and because he doesn't have to go to school) but also because his short life span now means that he will never have to be parted from his beloved grandmother as he has been from his parents. Already well into her 80's, she has only a few years to live, and he as a mouse-person is granted the same few years. Rather than bemoaning this, both grandmother and grandson rejoice that they can now count on living and dying together.
+    
+    The boy doesn't mind being a mouse, he says, because ''It doesn't matter who you are or what you look like so long as somebody loves you.'' And, indeed, the hero of this tale is loved. Whether as a boy or a mouse, he experiences the most extraordinary and unqualified approval from his grandmother - the sort of unconditional love adults and children alike crave.
+    
+    ''The Witches'' is finally a love story - the story of a little boy who loves his grandmother so utterly (and she him) that they are looking forward to spending their last years few exterminating the witches of the world together. It is a curious sort of tale but an honest one, which deals with matters of crucial importance to children: smallness, the existence of evil in the world, mourning, separation, death. The witches I've written about are far more benevolent figures, yet perhaps that is the point of witches - they are projections of the human unconscious and so can have many incarnations.`, review_url: 'https://www.nytimes.com/1983/11/13/books/the-boy-who-became-a-mouse.html', title: 'The Witches'});
+    this.books?.push({author: 'Dale Carnegie',genre: 'Self-Help', book_id: 24, page_count: 320, price: 51, publication_date: '2013.06.11', rating: 8.6, review: null, review_url: null, title: 'How To Win Friends and Influence People'})
+    this.books?.push({author: 'Laura Levine',genre: 'Thriller', book_id: 25, page_count: 204, price: 29.90, publication_date: '2015.09.23', rating: 8.0, review: null, review_url: null, title: 'Death of a Bachelorette'})
+    this.books?.push({author: 'Agatha Christie',genre: 'Detective and Mystery', book_id: 26, page_count: 207, price: 19.80, publication_date: '1985.06.15', rating: 9.2, review: null, review_url: 'https://www.nytimes.com/2017/11/17/books/review/murder-orient-express-agatha-christie-audiobook-kenneth-branagh.html', title: 'Murder on the Orient Express'})
+    this.books?.push({author: 'Ernest Cline',genre: 'Action', book_id: 27, page_count: 34, price: 25, publication_date: '2011.08.15', rating: 9.2, review: 'Ernest Clines “Ready Player One” is a book filled with references to video games, virtual reality, 80s pop-culture trivia, geek heroes like ', review_url: 'http://www.nytimes.com/2011/08/15/books/ready-player-one-by-ernest-cline-review.html', title: 'Ready Player One'})
 
     this.sortedBooks = this.books?.slice();
   }
+  async ngOnInit() {
+    await this.getAllTitles()
+    this.filteredTitleOptions = this.formControlTitle.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterTitles(value || '')),
+    );
+    await this.getAllAuthors()
+    this.filteredAuthorOptions = this.formControlAuthor.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterAuthors(value || '')),
+    );
+    
+    
+  }
+
+  async getReview(book_id: any) {
+    console.log(book_id);
+    const index = this.books.findIndex(book => book.book_id === book_id);
+    if (index > 0) {
+      if (this.books[index].review_url != null) {
+        return;
+      }
+    }
+    this.loading = true;
+    let url = this.url + 'get_review?book_id=' + book_id;
+    this.http.get<any>(url).subscribe(res => {
+      console.log(res);
+      this.books[index].review = res.review;
+      this.books[index].review_url = res.review_url;
+      
+      this.loading = false;
+      if (this.books) {
+        this.sortedBooks = this.books?.slice();
+      }
+      
+    })
+  }
   
   async search() {
-    
+    this.loading = true;
     let url = this.url + 'books?';
     if (this.bookTitle) {
       url += 'title=' + this.bookTitle + '&';
@@ -72,6 +135,7 @@ export class AppComponent {
     this.http.get<BookResponse[]>(url).subscribe(res => {
       console.log(res);
       this.books = res;
+      this.loading = false;
       if (this.books) {
         this.sortedBooks = this.books?.slice();
       }
@@ -106,6 +170,34 @@ export class AppComponent {
           return 0;
       }
     });
+  }
+
+  async getAllTitles() {
+    let url = this.url + 'all_titles';
+    this.http.get<any>(url).subscribe(res => {
+      this.titleOptions = res; 
+      console.log(this.titleOptions);
+    });
+  }
+
+  async getAllAuthors() {
+    let url = this.url + 'all_authors';
+    this.http.get<any>(url).subscribe(res => {
+      this.authorOptions = res; 
+      console.log(this.authorOptions)
+    });
+  }
+
+  private _filterTitles(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.titleOptions.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
+  private _filterAuthors(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.authorOptions.filter(option => option.toLowerCase().includes(filterValue));
   }
 }
 
