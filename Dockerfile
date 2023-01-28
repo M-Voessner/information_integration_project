@@ -17,14 +17,7 @@
 FROM python
 
 WORKDIR /app
-COPY requirements.txt /app
-COPY books-api.py /app
-COPY config.py /app
-COPY database.ini /app
-COPY create_integrated_database.py /app
-COPY connect.py /app
-COPY main.py /app
-COPY NYTimesExtractor.py /app
+COPY . /app
 # How you install your python packages may differ
 RUN pip install -r requirements.txt
 

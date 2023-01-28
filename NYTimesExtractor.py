@@ -14,12 +14,12 @@ class NYTimesExtractor():
         response = requests.get(call)
         if (response.status_code == 200):
             response = response.json()['results']
-            print(response)
             for i in range(len(response)):
-                temp = {'review': None, 'review_url': None}
+                temp = {'review': None, 'review_url': None, 'summary': None, 'title': title}
                 review = self.getReview(response[i]['url'])
                 temp['review'] = review
                 temp['review_url'] = response[i]['url']
+                temp['summary'] = response[i]['summary']
                 self.data.append(temp)
         else:
             print('Error: ' + response.reason)
@@ -31,10 +31,12 @@ class NYTimesExtractor():
         if (response.status_code == 200):
             response = response.json()['results']
             for i in range(len(response)):
-                temp = {'review': None, 'review_url': None}
+                temp = {'review': None, 'review_url': None, 'summary': None,'title': None}
                 review = self.getReview(response[i]['url'])
                 temp['review'] = review
                 temp['review_url'] = response[i]['url']
+                temp['summary'] = response[i]['summary']
+                temp['title']= response[i]['book_title']
                 self.data.append(temp)
         else:
             print('Error: ' + response.reason)
