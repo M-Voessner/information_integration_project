@@ -7,6 +7,8 @@ from math import floor
 import pandas as pd
 import numpy as np
 import psycopg2.extras as extras
+import create_integrated_database
+import connect
 
 sys.stdin.reconfigure(encoding='utf-8')
 sys.stdout.reconfigure(encoding='utf-8')
@@ -211,24 +213,24 @@ try:
     conn = gres.connect(
         dbname ="postgres", 
         user='postgres',
-        #host='postgres',
-        host='localhost',
-        #password='1234',
-        password='postgres',
+        host='postgres',
+        #host='localhost',
+        password='1234',
+        #password='postgres',
         port='5432'
         )
     '''
     conn.autocommit = True
 
     cur = conn.cursor()
+    
+    
+    create_integrated_database.run()
+    connect.initial_connect()
 
     execute_values(conn, global_data, 'books')
     execute_values(conn, genres, 'genres')
     execute_values(conn, genre_groups, 'genre_groups',True,book_ids)
-    
-    sql = """INSERT INTO books(book_id,title,author,publication_date,review,review_url,page_count,price,average_rating,cover)
-    VALUES(2,'The Witches', 'Dal', TIMESTAMP '2011-05-16 15:36:38', Null, Null, 0,0,0,'')
-    """
     
     #cur.execute(sql)
     cur.close()

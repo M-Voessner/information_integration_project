@@ -40,7 +40,7 @@ class GoodReads():
         self.data = []
         self.data2 = pd.DataFrame()
 
-    def load_good_reads_pandas(self, file='.\data_sources\\books_good_reads.csv'):
+    def load_good_reads_pandas(self, file='./data_sources/books_good_reads.csv'):
         df = pd.read_csv(file, on_bad_lines='skip',encoding='utf8')
         # Drop unnecessary columns
         df = df.drop(['isbn','text_reviews_count'],axis=1)
@@ -67,7 +67,7 @@ class GoodReads():
         df['book_id'] = df['book_id'] + 2000
         self.data2 = df
 
-    def load_good_reads(self, file='.\data_sources\books_good_reads.csv'):
+    def load_good_reads(self, file='./data_sources/books_good_reads.csv'):
         """ Reads data from csv file and expects the data to follow the schema of GoodReads """
         reader = None
         out = []

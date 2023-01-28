@@ -103,7 +103,7 @@ def create_genre_groups(df,genres):
 
 def read_GoogleBooks_file():
 
-    df = pd.read_csv('.\data_sources\google_books_1299.csv',encoding='utf8')
+    df = pd.read_csv('./data_sources/google_books_1299.csv',encoding='utf8')
 
     genres = create_genre_keys(df)
 
