@@ -1,8 +1,13 @@
-<div style="background-color: green">
-  <h2>Book Reviews</h2>
+<div style="background-color: rgb(46, 73, 160)">
+  <h2 style="color: white">Book Reviews</h2>
   <mat-form-field class="example-form-field">
     <mat-label>Book title</mat-label>
-    <input matInput type="text" [(ngModel)]="bookTitle">
+    <input matInput type="text" [formControl]="formControlTitle" [matAutocomplete]="autoTitles" [(ngModel)]="bookTitle">
+    <mat-autocomplete #autoTitles="matAutocomplete">
+      <mat-option *ngFor="let option of filteredTitleOptions | async" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-autocomplete>
     <button *ngIf="bookTitle" matSuffix mat-icon-button aria-label="Clear" (click)="bookTitle=''">
       <mat-icon>close</mat-icon>
     </button>
@@ -10,14 +15,47 @@
   
   <mat-form-field class="example-form-field">
     <mat-label>Book author</mat-label>
-    <input matInput type="text" [(ngModel)]="bookAuthor">
+    <input matInput type="text" [(ngModel)]="bookAuthor" [formControl]="formControlAuthor" [matAutocomplete]="autoAuthors">
+    <mat-autocomplete #autoAuthors="matAutocomplete">
+      <mat-option *ngFor="let option of filteredAuthorOptions | async" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-autocomplete>
     <button *ngIf="bookAuthor" matSuffix mat-icon-button aria-label="Clear" (click)="bookAuthor=''">
       <mat-icon>close</mat-icon>
     </button>
   </mat-form-field>
 
+  <mat-form-field class="example-form-field">
+    <mat-label>Rating</mat-label>
+    <input matInput type="number" [(ngModel)]="bookRating">
+    <button *ngIf="bookRating" matSuffix mat-icon-button aria-label="Clear" (click)="bookRating=undefined">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <mat-form-field class="example-form-field" appearance="fill">
+    <mat-label>Genre</mat-label>
+    <mat-select [(ngModel)]="bookGenre" name="genre">
+      <mat-option *ngFor="let genre of options" [value]="genre.value">
+        {{genre.viewValue}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="example-form-field" appearance="fill">
+    <mat-label>Published after</mat-label>
+    <input matInput [matDatepicker]="picker">
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+
   <br>
-  <button mat-button (click)="search()">Search</button>
+  <button mat-raised-button (click)="search()">Search</button>
+</div>
+<div *ngIf="loading">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </div>
 <table mat-table [dataSource]="sortedBooks || []" class="mat-elevation-z8" matSort (matSortChange)="sortData($event)" multiTemplateDataRows >
   <ng-container matColumnDef="title" >
@@ -31,6 +69,10 @@
   <ng-container matColumnDef="rating">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Rating</th>
     <td mat-cell *matCellDef="let element"> {{element?.rating}} </td>
+  </ng-container>
+  <ng-container matColumnDef="genre">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Genre</th>
+    <td mat-cell *matCellDef="let element"> {{element?.genre}} </td>
   </ng-container>
   <ng-container matColumnDef="review">
     <th mat-header-cell *matHeaderCellDef>Review</th>
@@ -75,7 +117,7 @@
   <tr mat-row *matRowDef="let element; columns: displayedColumnsWithExpand;"
       class="example-element-row"
       [class.example-expanded-row]="expandedReview === element"
-      (click)="expandedReview = expandedReview === element ? null : element">
+      (click)="expandedReview = expandedReview === element ? null : element; getReview(element.book_id)">
   </tr>
   <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
 </table>
