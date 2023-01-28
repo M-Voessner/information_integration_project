@@ -5,7 +5,9 @@ conn = gres.connect(
     dbname ="postgres", 
     user='postgres',
     host='postgres',
+    #host='localhost',
     password='1234',
+    #password='postgres',
     port='5432'
 )
 

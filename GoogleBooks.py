@@ -18,10 +18,10 @@ def create_genre_keys(df):
 
     # Generate genre keys
     genres_df = genres_df.reset_index()
-    genres_df = genres_df.rename(columns={"index":"genre_ID"})
+    genres_df = genres_df.rename(columns={"index":"genre_id"})
     genres_df = genres_df.rename(columns={"genres":"genre_name"})
-    genres_df['genre_ID'] = genres_df.index
-    genres_df['genre_ID']= genres_df['genre_ID'].astype("string")
+    genres_df['genre_id'] = genres_df.index
+    genres_df['genre_id']= genres_df['genre_id'].astype("string")
     
     return genres_df
     
@@ -57,7 +57,7 @@ def filter_ISBNs(df):
     df['ISBN'] = df['ISBN'].apply(lambda x: x if x.isnumeric() else 0)
     # Change ISBN format to int
     df['ISBN'] = df['ISBN'].astype('int64')
-    df = df.rename(columns={"ISBN":"isbn13"})
+    df = df.rename(columns={"ISBN":"ISBN13"})
     return df
 
 def change_language_naming_convention(df):
@@ -88,7 +88,7 @@ def create_genre_groups(df,genres):
     genre_dict = genres.set_index("genre_name").to_dict()
 
     df['generes'] = [','.join(map(str, l)) for l in df['generes']]
-    df['generes'] = df['generes'].replace(genre_dict.get('genre_ID'), regex = True).str.replace(",", " ").apply(lambda x : re.sub(r'[A-z]', '', x))
+    df['generes'] = df['generes'].replace(genre_dict.get('genre_id'), regex = True).str.replace(",", " ").apply(lambda x : re.sub(r'[A-z]', '', x))
     
     df = df.reset_index()
     df['genre_group_key'] = df.index
@@ -105,20 +105,18 @@ def read_GoogleBooks_file():
 
     df = pd.read_csv('.\data_sources\google_books_1299.csv',encoding='utf8')
 
-    #df = clean_dataset(df)
-    #df = df.rename(columns={"Unnamed: 0":"bookID"})
-    
     genres = create_genre_keys(df)
 
     genre_groups = create_genre_groups(df,genres)
-    
-    # This is for testing purposes   
-    #pd.set_option('display.max_columns', None)
-    #pd.set_option('display.max_rows', None)
-
+    genre_groups = genre_groups.rename(columns = {
+        'genre_group_key':'book_id',
+        'genres':'genre_id'})
+    genre_groups['genre_id'] = genre_groups['genre_id'].str.replace(r'\D+', '')
     df = clean_dataset(df)
-    df = df.rename(columns={"Unnamed: 0":"bookID"})
-    return df
+    df = df.rename(columns={"Unnamed: 0":"book_id"})
+    return df, genres, genre_groups
 
+#_,_,ggdf = read_GoogleBooks_file()
+#print(ggdf.head())
 
 

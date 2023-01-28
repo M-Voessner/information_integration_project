@@ -4,3 +4,6 @@ flask_cors
 requests
 bs4
 selenium
+pandas
+math
+numpy

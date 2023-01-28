@@ -50,7 +50,9 @@ class GoodReads():
         'authors':'author',
         'average_rating':'average_user_rating',
         'language_code':'language',
-        '  num_pages':'page_count'
+        '  num_pages':'page_count',
+        'bookID':'book_id',
+        'isbn13':'ISBN13'
         })
 
         # Change publication date format
@@ -62,7 +64,7 @@ class GoodReads():
         df['price'] =  0.0
         df['currency'] =  'EUR'
         df['description'] = ''
-        df['bookID'] = df['bookID'] + 2000
+        df['book_id'] = df['book_id'] + 2000
         self.data2 = df
 
     def load_good_reads(self, file='.\data_sources\books_good_reads.csv'):
