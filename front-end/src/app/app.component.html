@@ -37,7 +37,7 @@
   <mat-form-field class="example-form-field" appearance="fill">
     <mat-label>Genre</mat-label>
     <mat-select [(ngModel)]="bookGenre" name="genre">
-      <mat-option *ngFor="let genre of options" [value]="genre.value">
+      <mat-option *ngFor="let genre of genreOptions" [value]="genre.value">
         {{genre.viewValue}}
       </mat-option>
     </mat-select>
@@ -66,29 +66,21 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Author</th>
     <td mat-cell *matCellDef="let element"> {{element?.author}} </td>
   </ng-container>
-  <ng-container matColumnDef="rating">
+  <ng-container matColumnDef="average_rating">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Rating</th>
-    <td mat-cell *matCellDef="let element"> {{element?.rating}} </td>
+    <td mat-cell *matCellDef="let element"> {{element?.average_rating}} </td>
   </ng-container>
   <ng-container matColumnDef="genre">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Genre</th>
     <td mat-cell *matCellDef="let element"> {{element?.genre}} </td>
   </ng-container>
-  <ng-container matColumnDef="review">
-    <th mat-header-cell *matHeaderCellDef>Review</th>
-    <td mat-cell *matCellDef="let element"> ... </td>
-  </ng-container>
-  <ng-container matColumnDef="review_url">
-    <th mat-header-cell *matHeaderCellDef>Review URL</th>
-    <a mat-flat-button mat-cell *matCellDef="let element"[href]="element?.review_url" mat-menu-item target="_blank">{{element?.review_url}}</a>
-  </ng-container>
-  <ng-container matColumnDef="page_count">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>page count</th>
-    <td mat-cell *matCellDef="let element"> {{element?.page_count}} </td>
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef>Description</th>
+    <td mat-cell *matCellDef="let element"> {{element?.description}} </td>
   </ng-container>
   <ng-container matColumnDef="price">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>price</th>
-    <td mat-cell *matCellDef="let element"> {{element?.price}} </td>
+    <td mat-cell *matCellDef="let element"> {{element?.price}} {{element?.currency}} </td>
   </ng-container>
   <ng-container matColumnDef="publication_date">
     <th mat-header-cell *matHeaderCellDef>publication_date</th>

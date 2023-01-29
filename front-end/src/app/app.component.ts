@@ -3,20 +3,32 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Sort } from '@angular/material/sort';
-import { map, Observable, startWith } from 'rxjs';
+import { map, Observable, startWith, take } from 'rxjs';
 
 
 interface BookResponse {
   book_id: number| null;
-  title: string | null;
   author: string | null;
+  title: string | null;
+  ratings_count: number | null;
+  currency: string | null;
+  description: string | null;
+  publisher: string | null;
+  ISBN13: string | null;
+  language: string | null;
+  cover: string | null;
   publication_date: string | null;
   review: string | null;
   review_url: string | null;
   page_count: number | null;
   price: number| null ;
-  rating: number | null;
+  average_rating: number | null;
   genre: string | null;
+}
+
+interface DropDownOption {
+  value: string;
+  viewValue: string;
 }
 
 @Component({
@@ -44,17 +56,12 @@ export class AppComponent implements OnInit {
   bookAuthor?: string;
   bookRating?: number;
   bookGenre?: string;
-  options = [
-    {value: 'Thriller', viewValue: 'Thriller'},
-    {value: 'Comedy', viewValue: 'Comedy'},
-    {value: 'Self-Help', viewValue: 'Self-Help'},
-    {value: 'Action', viewValue: 'Action'}
-  ];
+  genreOptions: DropDownOption[] = [];
   url = 'http://localhost:5000/';
   books: BookResponse[] = [];
 
   sortedBooks: BookResponse[];
-  displayedColumns: string[] = ['title', 'author', 'rating','genre', 'review', 'review_url', 'page_count', 'price', 'publication_date'];
+  displayedColumns: string[] = ['title', 'author', 'average_rating','genre', 'description', 'price', 'publication_date'];
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand']
   expandedReview?: BookResponse | null;
 
@@ -73,8 +80,7 @@ export class AppComponent implements OnInit {
       startWith(''),
       map(value => this._filterAuthors(value || '')),
     );
-    
-    
+    await this.getAllGenres()
   }
 
   async getReview(book_id: any) {
@@ -110,10 +116,10 @@ export class AppComponent implements OnInit {
       url += 'author=' + this.bookAuthor + '&';
     } 
     if (this.bookGenre) {
-      url += 'genre=' + this.bookGenre + '&';
+      url += 'genre_name=' + this.bookGenre + '&';
     }
     if (this.bookRating) {
-      url += 'rating=' + this.bookRating + '&';
+      url += 'average_rating=' + this.bookRating + '&';
     } 
     url = url.slice(0,-1)
     this.http.get<BookResponse[]>(url).subscribe(res => {
@@ -142,8 +148,8 @@ export class AppComponent implements OnInit {
       switch (sort.active) {
         case 'author':
           return compare(a.author || '', b.author || '', isAsc);
-        case 'rating':
-          return compare(a.rating || '', b.rating || '', isAsc);
+        case 'average_rating':
+          return compare(a.average_rating || '', b.average_rating || '', isAsc);
         case 'page_count':
           return compare(a.page_count || '', b.page_count || '', isAsc);
         case 'price':
@@ -159,29 +165,39 @@ export class AppComponent implements OnInit {
   async getAllTitles() {
     let url = this.url + 'all_titles';
     this.http.get<any>(url).subscribe(res => {
-      this.titleOptions = res; 
-      console.log(this.titleOptions);
+      this.titleOptions = res;
     });
   }
 
   async getAllAuthors() {
     let url = this.url + 'all_authors';
     this.http.get<any>(url).subscribe(res => {
-      this.authorOptions = res; 
-      console.log(this.authorOptions)
+      this.authorOptions = res;
     });
   }
+
+  async getAllGenres() {
+    let url = this.url + 'all_genres';
+    this.http.get<any>(url).subscribe(res => {
+      this.genreOptions = res.map((genre: string) => {
+        return <DropDownOption> {
+          value: genre,
+          viewValue: genre
+        }
+      }); 
+    })
+  };
 
   private _filterTitles(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.titleOptions.filter(option => option.toLowerCase().includes(filterValue));
+    return this.titleOptions.filter(option => option.toLowerCase().includes(filterValue)).slice(0,10);
   }
 
   private _filterAuthors(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.authorOptions.filter(option => option.toLowerCase().includes(filterValue));
+    return this.authorOptions.filter(option => option.toLowerCase().includes(filterValue)).slice(0,10);
   }
 }
 

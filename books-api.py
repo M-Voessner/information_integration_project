@@ -29,7 +29,9 @@ def home():
 def allBooks():
     conn = None
     try:
-        sql = """SELECT * FROM books"""
+        sql = """SELECT * FROM BOOKS b 
+            JOIN GENRE_GROUPS gg ON b.book_id = gg.book_id
+            JOIN GENRES ge ON ge.genre_id = gg.genre_id"""
         params = config()
         conn = gres.connect(**params)
         conn.autocommit = True
@@ -40,16 +42,22 @@ def allBooks():
         for row in books:
             temp = {}
             temp['book_id'] = row[0]
-            temp['title'] = row[1]
-            temp['author'] = row[2]
-            temp['publication_date'] = row[3]
-            temp['review'] = row[4]
-            temp['review_url'] = row[5]
-            temp['page_count'] = row[6]
-            temp['price'] = row[7]
-            temp['rating'] = row[8]
-            temp['cover']= row[9]
-            temp['genre'] = row[10]
+            temp['autor'] = row[1]
+            temp['title'] = row[2]
+            temp['average_rating'] = row[3]
+            temp['ratings_count'] = row[4]
+            temp['price'] = row[5]
+            temp['currency'] = row[6]
+            temp['description'] = row[7]
+            temp['publisher'] = row[8]
+            temp['review']= row[9]
+            temp['review_url'] = row[10]
+            temp['page_count'] = row[11]
+            temp['ISBN13'] = row[12]
+            temp['language'] = row[13]
+            temp['publication_date'] = row[14]
+            temp['cover'] = row[15]
+            temp['genre'] = row[19]
             result.append(temp)
         return jsonify(result)
     except (Exception, gres.DatabaseError) as error:
@@ -99,6 +107,27 @@ def allAuthors():
     finally:
         if conn is not None:
             conn.close()
+            
+@app.route('/all_genres', methods = ['GET'])
+def allGenres():
+    conn = None
+    try:
+        sql = """SELECT genre_name FROM genres"""
+        params = config()
+        conn = gres.connect(**params)
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute(sql)
+        books = cur.fetchall()
+        result = []
+        for row in books:
+            result.append(row[0])
+        return jsonify(result)
+    except (Exception, gres.DatabaseError) as error:
+        print('FAILED: %s' % error, flush=True)
+    finally:
+        if conn is not None:
+            conn.close()
   
   
 @app.route('/get_review', methods = ['GET'])
@@ -119,11 +148,11 @@ def getReview():
         books = cur.fetchall()
         review = {'review': None, 'review_url': None, 'summary': None}
         for row in books:
-            if (row[5] is not None):
-                return jsonify({'review': row[4], 'review_url': row[5]})
+            if (row[9] is not None):
+                return jsonify({'review': row[9], 'review_url': row[10]})
             else:
-                extractor.getReviewWithTitle(row[1])
-                review = getReviewByTitle(extractor.data, row[1])
+                extractor.getReviewWithTitle(row[2])
+                review = getReviewByTitle(extractor.data, row[2])
                 print(extractor.data)
                 print(review)
                 if (review['review'] == None):
@@ -147,13 +176,14 @@ def disp():
         args = request.args
         title = args.get('title')
         author = args.get('author')
-        rating = args.get('rating')
-        genre = args.get('genre')
+        average_rating = args.get('average_rating')
+        genre_name = args.get('genre_name')
         date = args.get('date')
         page_count = args.get('page-count')
         price = args.get('price')
-        print(args)
-        sql = """SELECT * FROM books"""
+        sql = """SELECT * FROM BOOKS b 
+            LEFT JOIN GENRE_GROUPS gg ON b.book_id = gg.book_id
+            LEFT JOIN GENRES ge ON ge.genre_id = gg.genre_id"""
         where = []
         sqlparams = {}
         if (title):
@@ -162,12 +192,12 @@ def disp():
         if (author):
             where.append("""author = %(author)s""")
             sqlparams['author']=author
-        if (rating):
-            where.append("""average_rating = %(rating)s""")
-            sqlparams['rating']=rating
-        if (genre):
-            where.append("""genre = %(genre)s""")
-            sqlparams['genre']=genre
+        if (average_rating):
+            where.append("""average_rating = %(average_rating)s""")
+            sqlparams['average_rating']=average_rating
+        if (genre_name):
+            where.append("""genre_name = %(genre_name)s""")
+            sqlparams['genre_name']=genre_name
         if (date):
             where.append("""publication_date = %(date)s""")
             sqlparams['date']=date
@@ -191,16 +221,22 @@ def disp():
         for row in books:
             temp = {}
             temp['book_id'] = row[0]
-            temp['title'] = row[1]
-            temp['author'] = row[2]
-            temp['publication_date'] = row[3]
-            temp['review'] = row[4]
-            temp['review_url'] = row[5]
-            temp['page_count'] = row[6]
-            temp['price'] = row[7]
-            temp['rating'] = row[8]
-            temp['cover']= row[9]
-            temp['genre'] = row[10]
+            temp['author'] = row[1]
+            temp['title'] = row[2]
+            temp['average_rating'] = row[3]
+            temp['ratings_count'] = row[4]
+            temp['price'] = row[5]
+            temp['currency'] = row[6]
+            temp['description'] = row[7]
+            temp['publisher'] = row[8]
+            temp['review']= row[9]
+            temp['review_url'] = row[10]
+            temp['page_count'] = row[11]
+            temp['ISBN13'] = row[12]
+            temp['language'] = row[13]
+            temp['publication_date'] = row[14]
+            temp['cover'] = row[15]
+            temp['genre'] = row[19]
             result.append(temp)
         return jsonify(result)
     except (Exception, gres.DatabaseError) as error:
@@ -211,6 +247,5 @@ def disp():
   
 # driver function
 if __name__ == '__main__':
-    print('Test')
 
     app.run(debug = True)
