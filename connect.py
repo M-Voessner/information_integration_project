@@ -11,6 +11,19 @@ def initial_connect() -> None:
 
         # connect to PostgreSQL server
         conn = gres.connect(**params)
+
+        '''
+        conn = gres.connect(
+        dbname ="postgres", 
+        user='postgres',
+        #host='postgres',
+        host='localhost',
+        #password='1234',
+        password='postgres',
+        port='5432'
+        )
+        '''
+
         conn.autocommit = True
 
         cur = conn.cursor()
@@ -19,16 +32,21 @@ def initial_connect() -> None:
             DROP TABLE IF EXISTS books CASCADE;
             CREATE TABLE books (
                 book_id INTEGER PRIMARY KEY,
-                title VARCHAR(511),
                 author VARCHAR(255),
-                publication_date DATE,
-                review TEXT,
-                review_url VARCHAR(511),
-                page_count INTEGER,
-                price NUMERIC(8, 2),
+                title VARCHAR(511),
                 average_rating NUMERIC(4,2),
-                cover VARCHAR(511),
-                genre VARCHAR(30)
+                ratings_count INTEGER,  
+                price NUMERIC(8, 2),
+                currency VARCHAR(3),
+                description TEXT,
+                publisher VARCHAR(255),
+                review TEXT,
+                review_url VARCHAR(511),  
+                page_count INTEGER,
+                ISBN13 BIGINT,
+                language VARCHAR(20),
+                publication_date DATE,
+                cover VARCHAR(511)
             )
         '''
 
