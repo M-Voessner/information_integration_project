@@ -73,6 +73,8 @@ export class AppComponent implements OnInit {
   pageSizeOptions = [10,25,50,100]
   pageEvent?: PageEvent;
 
+  showPagination = true;
+
   constructor(private http: HttpClient) {
 
     this.sortedBooks = this.books?.slice();
@@ -103,7 +105,6 @@ export class AppComponent implements OnInit {
   }
 
   async getReview(book_id: any) {
-    console.log(book_id);
     const index = this.books.findIndex(book => book.book_id === book_id);
     if (index > 0) {
       if (this.books[index].review_url != null) {
@@ -147,6 +148,7 @@ export class AppComponent implements OnInit {
       this.loading = false;
       if (this.books) {
         this.sortedBooks = this.books?.slice();
+        this.showPagination = this.sortedBooks.length == this.pageSize;
       }
       
     })
@@ -211,13 +213,13 @@ export class AppComponent implements OnInit {
   private _filterTitles(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.titleOptions.filter(option => option.toLowerCase().includes(filterValue)).slice(0,10);
+    return this.titleOptions.filter(option => option.toLowerCase().startsWith(filterValue)).slice(0,50);
   }
 
   private _filterAuthors(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.authorOptions.filter(option => option.toLowerCase().includes(filterValue)).slice(0,10);
+    return this.authorOptions.filter(option => option.toLowerCase().startsWith(filterValue)).slice(0,50);
   }
 }
 
