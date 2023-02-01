@@ -172,6 +172,8 @@ def getReview():
 @app.route('/books', methods = ['GET'])
 def disp():
     conn = None
+    first = 10000000
+    skip = 0
     try:
         args = request.args
         title = args.get('title')
@@ -181,11 +183,15 @@ def disp():
         date = args.get('date')
         page_count = args.get('page-count')
         price = args.get('price')
+        first = args.get('first')
+        skip = args.get('skip')
         sql = """SELECT * FROM BOOKS b 
             LEFT JOIN GENRE_GROUPS gg ON b.book_id = gg.book_id
-            LEFT JOIN GENRES ge ON ge.genre_id = gg.genre_id"""
-        where = []
+            LEFT JOIN GENRES ge ON ge.genre_id = gg.genre_id
+            """
         sqlparams = {}
+        where = []
+        
         if (title):
             where.append("""title = %(title)s""")
             sqlparams['title'] = title
@@ -209,6 +215,9 @@ def disp():
             sqlparams['price']=price
         if where:
             sql = '{} WHERE {}'.format(sql, ' AND '.join(where))
+        sql += """LIMIT %(first)s OFFSET %(skip)s"""
+        sqlparams['first'] = first
+        sqlparams['skip'] = skip
         _sql = sql,sqlparams
         params = config()
         conn = gres.connect(**params)

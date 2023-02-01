@@ -14,6 +14,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import {MatSelectModule} from '@angular/material/select';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatPaginatorModule} from '@angular/material/paginator'
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     MatSelectModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatPaginatorModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -2,6 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { map, Observable, startWith, take } from 'rxjs';
 
@@ -65,11 +66,29 @@ export class AppComponent implements OnInit {
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand']
   expandedReview?: BookResponse | null;
 
+
+  pageLength = 100;
+  pageSize = 10;
+  pageIndex = 0;
+  pageSizeOptions = [10,25,50,100]
+  pageEvent?: PageEvent;
+
   constructor(private http: HttpClient) {
 
     this.sortedBooks = this.books?.slice();
   }
+
+
+  handlePageEvent(e: PageEvent) {
+    this.pageEvent = e;
+    this.pageLength = e.length;
+    this.pageSize = e.pageSize;
+    this.pageIndex = e.pageIndex;
+    this.search()
+  }
+
   async ngOnInit() {
+    this.search()
     await this.getAllTitles()
     this.filteredTitleOptions = this.formControlTitle.valueChanges.pipe(
       startWith(''),
@@ -121,7 +140,7 @@ export class AppComponent implements OnInit {
     if (this.bookRating) {
       url += 'average_rating=' + this.bookRating + '&';
     } 
-    url = url.slice(0,-1)
+    url += 'first=' + this.pageSize + '&' + 'skip=' + this.pageSize * this.pageIndex;
     this.http.get<BookResponse[]>(url).subscribe(res => {
       console.log(res);
       this.books = res;
@@ -166,6 +185,7 @@ export class AppComponent implements OnInit {
     let url = this.url + 'all_titles';
     this.http.get<any>(url).subscribe(res => {
       this.titleOptions = res;
+      this.pageLength = this.titleOptions.length
     });
   }
 

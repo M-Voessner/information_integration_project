@@ -113,3 +113,10 @@
   </tr>
   <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
 </table>
+<mat-paginator 
+              (page)="handlePageEvent($event)"
+              [length]="pageLength"
+              [pageSize]="pageSize"
+              [pageSizeOptions]="pageSizeOptions"
+              aria-label="Select page">
+</mat-paginator>
