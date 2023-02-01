@@ -113,7 +113,7 @@
   </tr>
   <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
 </table>
-<mat-paginator *ngIf="showPagination"
+<mat-paginator id="footer" *ngIf="showPagination"
               (page)="handlePageEvent($event)"
               [length]="pageLength"
               [pageSize]="pageSize"

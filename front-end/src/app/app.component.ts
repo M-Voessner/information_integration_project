@@ -86,7 +86,7 @@ export class AppComponent implements OnInit {
     this.pageLength = e.length;
     this.pageSize = e.pageSize;
     this.pageIndex = e.pageIndex;
-    this.search()
+    this.search(false)
   }
 
   async ngOnInit() {
@@ -126,7 +126,8 @@ export class AppComponent implements OnInit {
     })
   }
   
-  async search() {
+  async search(reset = true) {
+    this.pageIndex = reset ? 0 : this.pageIndex
     this.loading = true;
     let url = this.url + 'books?';
     if (this.bookTitle) {
