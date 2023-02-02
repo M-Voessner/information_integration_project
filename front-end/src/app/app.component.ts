@@ -60,12 +60,12 @@ export class AppComponent implements OnInit {
   genreOptions: DropDownOption[] = [];
   url = 'http://localhost:5000/';
   books: BookResponse[] = [];
-
+  
   sortedBooks: BookResponse[];
   displayedColumns: string[] = ['title', 'author', 'average_rating','genre', 'description', 'price', 'publication_date'];
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand']
   expandedReview?: BookResponse | null;
-
+  
 
   pageLength = 100;
   pageSize = 10;
@@ -75,9 +75,40 @@ export class AppComponent implements OnInit {
 
   showPagination = true;
 
+  yearChart: any;
+  rateChart: any;
+  pieData: any[] = [];
+  columnData: any[] = [];
+  columnChartOptions = {
+    animtionEnabled: true,
+    title: {
+      text: '',
+    },
+    data: [
+      {
+        type: 'line',
+        dataPoints: this.columnData,
+      },
+    ],
+  };
+
+  pieChartOptions = {
+    animtionEnabled: true,
+    title: {
+      text: '',
+    },
+    data: [
+      {
+        type: 'pie',
+        dataPoints: this.pieData,
+      },
+    ],
+  };
   constructor(private http: HttpClient) {
 
     this.sortedBooks = this.books?.slice();
+    this.getYearChartInstance();
+    this.getRateChartInstance();
   }
 
 
@@ -101,7 +132,19 @@ export class AppComponent implements OnInit {
       startWith(''),
       map(value => this._filterAuthors(value || '')),
     );
-    await this.getAllGenres()
+    await this.getAllGenres();
+    
+  }
+
+  async loadData() {
+    let url = this.url + 'load_data';
+    this.loading = true;
+    this.http.get<any>(url).subscribe(res => {
+      if (res.success == true) {
+        console.log('Success');
+      }
+      this.loading = false;
+    });
   }
 
   async getReview(book_id: any) {
@@ -114,7 +157,6 @@ export class AppComponent implements OnInit {
     this.loading = true;
     let url = this.url + 'get_review?book_id=' + book_id;
     this.http.get<any>(url).subscribe(res => {
-      console.log(res);
       this.books[index].review = res.review;
       this.books[index].review_url = res.review_url;
       
@@ -210,6 +252,39 @@ export class AppComponent implements OnInit {
       }); 
     })
   };
+
+  getYearChartInstance() {
+    this.loadYearData();
+  }
+
+  getRateChartInstance() {
+
+    this.loadRateData();
+  }
+
+  async loadRateData() {
+    let url = this.url + 'chart_rates';
+    this.http.get<any[]>(url).subscribe( res => {
+      res.forEach( (val:any[], index: number) => {
+        this.pieData[index] = {label: val[0], y: parseInt(val[1])};
+      });
+    });
+    if (this.rateChart) {
+      this.rateChart.render();
+    }
+  }
+
+  async loadYearData() {
+    let url = this.url + 'chart_years';
+    this.http.get<any[]>(url).subscribe( res => {
+      res.forEach( (val:any[]) => {
+        this.columnData.push({x: parseInt(val[0]), y: parseInt(val[1])});
+      });
+    });
+    if (this.yearChart) {
+      this.yearChart.render();
+    }
+  }
 
   private _filterTitles(value: string): string[] {
     const filterValue = value.toLowerCase();

@@ -177,69 +177,70 @@ def execute_values(conn, df, table,load_genre_groups = False, book_ids = []):
         return 1
     print("The dataframe has been inserted")
     cursor.close()
-
-conn = None
-try:
-    # Prepare data 
-    good_reads_loader = GoodReads.GoodReads()
-    good_reads_loader.load_good_reads_pandas()
-
-    google_books, genres, genre_groups = read_GoogleBooks_file()
-
-    global_data = transfer_to_global_schema(google_books, good_reads_loader.data2)
-
-    global_data = create_sorted_neighbourhood_keys(global_data)
-
-    global_data = detect_duplicates(global_data)
-
-    book_ids = global_data['book_id'].tolist()
     
-    '''
-    # Display global data preview
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.max_rows', None)
+def main():
+    conn = None
+    try:
+        # Prepare data 
+        good_reads_loader = GoodReads.GoodReads()
+        good_reads_loader.load_good_reads_pandas()
 
-    print(global_data.info())
-    print(global_data.head(3))
-    '''
+        google_books, genres, genre_groups = read_GoogleBooks_file()
 
-    # Read connection information
-    params = config()
+        global_data = transfer_to_global_schema(google_books, good_reads_loader.data2)
 
-    # connect to PostgreSQL server
-    conn = gres.connect(**params)
-    
-    ''' Local DB connection
-    conn = gres.connect(
-        dbname ="postgres", 
-        user='postgres',
-        host='postgres',
-        #host='localhost',
-        password='1234',
-        #password='postgres',
-        port='5432'
-        )
-    '''
-    conn.autocommit = True
+        global_data = create_sorted_neighbourhood_keys(global_data)
 
-    cur = conn.cursor()
-    
-    
-    create_integrated_database.run()
-    connect.initial_connect()
+        global_data = detect_duplicates(global_data)
 
-    execute_values(conn, global_data, 'books')
-    execute_values(conn, genres, 'genres')
-    execute_values(conn, genre_groups, 'genre_groups',True,book_ids)
-    
-    #cur.execute(sql)
-    cur.close()
-    conn.commit()
+        book_ids = global_data['book_id'].tolist()
+        
+        '''
+        # Display global data preview
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.max_rows', None)
 
-except (Exception, gres.DatabaseError) as error:
-    print('FAILED: %s' % error, flush=True)
-finally:
-    if conn is not None:
-        conn.close()
+        print(global_data.info())
+        print(global_data.head(3))
+        '''
+
+        # Read connection information
+        params = config()
+
+        # connect to PostgreSQL server
+        conn = gres.connect(**params)
+        
+        ''' Local DB connection
+        conn = gres.connect(
+            dbname ="postgres", 
+            user='postgres',
+            host='postgres',
+            #host='localhost',
+            password='1234',
+            #password='postgres',
+            port='5432'
+            )
+        '''
+        conn.autocommit = True
+
+        cur = conn.cursor()
+        
+        
+        create_integrated_database.run()
+        connect.initial_connect()
+
+        execute_values(conn, global_data, 'books')
+        execute_values(conn, genres, 'genres')
+        execute_values(conn, genre_groups, 'genre_groups',True,book_ids)
+        
+        #cur.execute(sql)
+        cur.close()
+        conn.commit()
+
+    except (Exception, gres.DatabaseError) as error:
+        print('FAILED: %s' % error, flush=True)
+    finally:
+        if conn is not None:
+            conn.close()
 
 

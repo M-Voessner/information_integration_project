@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 import psycopg2 as gres
 from config import config
 from flask_cors import CORS
+import main
 from NYTimesExtractor import NYTimesExtractor
   
 # creating a Flask app
@@ -21,6 +22,11 @@ def getReviewByTitle(list, term):
                 return i
     return {'review': None, 'review_url': None, 'summary': None}
       
+@app.route('/load_data', methods = ['GET'])
+def loadDatabase():
+    main.main()
+    return jsonify({'success': True})
+
 @app.route('/', methods = ['GET'])
 def home():
     return jsonify({'routes': ['all_books', 'books'], 'args': ['title', 'author']})
