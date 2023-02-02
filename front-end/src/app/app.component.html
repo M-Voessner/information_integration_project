@@ -12,10 +12,11 @@
       <mat-icon>close</mat-icon>
     </button>
   </mat-form-field>
-  
+
   <mat-form-field class="example-form-field">
     <mat-label>Book author</mat-label>
-    <input matInput type="text" [(ngModel)]="bookAuthor" [formControl]="formControlAuthor" [matAutocomplete]="autoAuthors">
+    <input matInput type="text" [(ngModel)]="bookAuthor" [formControl]="formControlAuthor"
+      [matAutocomplete]="autoAuthors">
     <mat-autocomplete #autoAuthors="matAutocomplete">
       <mat-option *ngFor="let option of filteredAuthorOptions | async" [value]="option">
         {{option}}
@@ -69,8 +70,51 @@
 <div *ngIf="loading">
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </div>
-<table mat-table [dataSource]="sortedBooks || []" class="mat-elevation-z8" matSort (matSortChange)="sortData($event)" multiTemplateDataRows >
-  <ng-container matColumnDef="title" >
+<div>
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Summary Charts
+        </mat-panel-title>
+        <mat-panel-description>
+
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Years
+            </mat-panel-title>
+            <mat-panel-description>
+              Chart showing the number of books published each year 
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <canvasjs-chart [options]="columnChartOptions" (chartInstance)="getYearChartInstance($event)"></canvasjs-chart>
+          </ng-template>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Ratings
+            </mat-panel-title>
+            <mat-panel-description>
+              Chart showing the number of books per rating 
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <canvasjs-chart [options]="pieChartOptions" (chartInstance)="getRateChartInstance($event)"></canvasjs-chart>
+          </ng-template>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+<table mat-table [dataSource]="sortedBooks || []" class="mat-elevation-z8" matSort (matSortChange)="sortData($event)"
+  multiTemplateDataRows>
+  <ng-container matColumnDef="title">
     <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
     <td mat-cell *matCellDef="let element"> {{element?.title}} </td>
   </ng-container>
@@ -101,7 +145,8 @@
   <ng-container matColumnDef="expand">
     <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
     <td mat-cell *matCellDef="let element">
-      <button mat-icon-button aria-label="expand row" (click)="(expandedReview = expandedReview === element ? null : element); $event.stopPropagation()">
+      <button mat-icon-button aria-label="expand row"
+        (click)="(expandedReview = expandedReview === element ? null : element); $event.stopPropagation()">
         <mat-icon *ngIf="expandedReview !== element">keyboard_arrow_down</mat-icon>
         <mat-icon *ngIf="expandedReview === element">keyboard_arrow_up</mat-icon>
       </button>
@@ -109,8 +154,7 @@
   </ng-container>
   <ng-container matColumnDef="expandedDetail">
     <td mat-cell *matCellDef="let element" [attr.colspan]="sortedBooks.length">
-      <div class="example-element-detail"
-           [@detailExpand]="element == expandedReview ? 'expanded' : 'collapsed'">
+      <div class="example-element-detail" [@detailExpand]="element == expandedReview ? 'expanded' : 'collapsed'">
         <div class="example-element-diagram">
           <div class="example-element-name"> {{element.review}} </div>
         </div>
@@ -118,10 +162,9 @@
     </td>
   </ng-container>
   <tr mat-header-row *matHeaderRowDef="displayedColumnsWithExpand"></tr>
-  <tr mat-row *matRowDef="let element; columns: displayedColumnsWithExpand;"
-      class="example-element-row"
-      [class.example-expanded-row]="expandedReview === element"
-      (click)="expandedReview = expandedReview === element ? null : element; getReview(element.book_id)">
+  <tr mat-row *matRowDef="let element; columns: displayedColumnsWithExpand;" class="example-element-row"
+    [class.example-expanded-row]="expandedReview === element"
+    (click)="expandedReview = expandedReview === element ? null : element; getReview(element.book_id)">
   </tr>
   <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
 </table>

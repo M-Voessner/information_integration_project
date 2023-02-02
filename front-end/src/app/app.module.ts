@@ -12,15 +12,19 @@ import { MatSortModule } from '@angular/material/sort';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatSelectModule} from '@angular/material/select';
+import {MatExpansionModule} from '@angular/material/expansion';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatRadioModule} from '@angular/material/radio';
+import * as CanvasJSAngularChart from '../assets/canvasjs.angular.component';
+var CanvasChart = CanvasJSAngularChart.CanvasJSChart;
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    CanvasChart,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -29,6 +33,7 @@ import {MatRadioModule} from '@angular/material/radio';
     FormsModule,
     MatIconModule,
     MatButtonModule,
+    MatExpansionModule,
     HttpClientModule,
     MatTableModule,
     MatSortModule,

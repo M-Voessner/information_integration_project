@@ -243,4 +243,5 @@ def main():
         if conn is not None:
             conn.close()
 
-
+if __name__ == '__main__':
+    main()

@@ -65,10 +65,12 @@ export class AppComponent implements OnInit {
   url = 'http://localhost:5000/';
   books: BookResponse[] = [];
   
+  
   sortedBooks: BookResponse[];
   displayedColumns: string[] = ['title', 'author', 'average_rating','genre', 'description', 'price', 'publication_date'];
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand']
   expandedReview?: BookResponse | null;
+  
   
 
   pageLength = 100;
@@ -79,6 +81,35 @@ export class AppComponent implements OnInit {
 
   showPagination = true;
 
+  yearChart: any;
+  rateChart: any;
+  pieData: any[] = [];
+  columnData: any[] = [];
+  columnChartOptions = {
+    animtionEnabled: true,
+    title: {
+      text: '',
+    },
+    data: [
+      {
+        type: 'line',
+        dataPoints: this.columnData,
+      },
+    ],
+  };
+
+  pieChartOptions = {
+    animtionEnabled: true,
+    title: {
+      text: '',
+    },
+    data: [
+      {
+        type: 'pie',
+        dataPoints: this.pieData,
+      },
+    ],
+  };
   yearChart: any;
   rateChart: any;
   pieData: any[] = [];

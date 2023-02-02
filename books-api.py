@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 from flask import Flask, jsonify, request
 import psycopg2 as gres
+import main
 from config import config
 from flask_cors import CORS
 import main
 from NYTimesExtractor import NYTimesExtractor
-  
+
+main.main()
+
 # creating a Flask app
 app = Flask(__name__)
 CORS(app)
@@ -266,7 +269,59 @@ def disp():
     finally:
         if conn is not None:
             conn.close()
-  
+
+@app.route('/chart_years', methods = ['GET'])
+def getYearData():
+    conn = None
+    try:
+        sql = """
+        SELECT EXTRACT(YEAR FROM publication_date) AS Year, COUNT(*) 
+        FROM books 
+        GROUP BY Year 
+        ORDER BY Year
+        """
+        params = config()
+        conn = gres.connect(**params)
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute(sql)
+        data = cur.fetchall()
+        result = []
+        for r in data:
+            result.append((r[0], r[1]))
+        return jsonify(result)
+    except (Exception, gres.DatabaseError) as error:
+        print('FAILED: %s' % error , flush=True)
+    finally:
+        if conn is not None:
+            conn.close()
+
+@app.route('/chart_rates', methods = ['GET'])
+def getRateData():
+    conn = None
+    try:
+        sql = """
+        SELECT TRUNC(average_rating) AS Rating, COUNT(*) 
+        FROM books
+        GROUP BY Rating
+        ORDER BY Rating 
+        """
+        params = config()
+        conn = gres.connect(**params)
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute(sql)
+        data = cur.fetchall()
+        result = []
+        for r in data:
+            result.append((r[0], r[1]))
+        return jsonify(result)
+    except (Exception, gres.DatabaseError) as error:
+        print('FAILED: %s' % error , flush=True)
+    finally:
+        if conn is not None:
+            conn.close()
+
 # driver function
 if __name__ == '__main__':
 
