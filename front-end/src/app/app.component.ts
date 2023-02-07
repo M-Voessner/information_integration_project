@@ -25,6 +25,7 @@ interface BookResponse {
   price: number| null ;
   average_rating: number | null;
   genre: string | null;
+  result_count: number | null;
 }
 
 interface DropDownOption {
@@ -171,9 +172,11 @@ export class AppComponent implements OnInit {
   async search(reset = true) {
     this.pageIndex = reset ? 0 : this.pageIndex
     this.loading = true;
+    console.log(this.bookTitle)
     let url = this.url + 'books?';
     if (this.bookTitle) {
-      url += 'title=' + this.bookTitle + '&';
+      const bookTitle = this.bookTitle.replace('#','%23')
+      url += 'title=' + bookTitle + '&';
     }
     if (this.bookAuthor) {
       url += 'author=' + this.bookAuthor + '&';
@@ -185,13 +188,15 @@ export class AppComponent implements OnInit {
       url += 'average_rating=' + this.bookRating + '&';
     } 
     url += 'first=' + this.pageSize + '&' + 'skip=' + this.pageSize * this.pageIndex;
+    console.log(url)
     this.http.get<BookResponse[]>(url).subscribe(res => {
       console.log(res);
       this.books = res;
       this.loading = false;
       if (this.books) {
         this.sortedBooks = this.books?.slice();
-        this.showPagination = this.sortedBooks.length == this.pageSize;
+        this.showPagination = this.books.length > 0;
+        this.pageLength = this.books[0].result_count || this.books.length
       }
       
     })
@@ -230,7 +235,6 @@ export class AppComponent implements OnInit {
     let url = this.url + 'all_titles';
     this.http.get<any>(url).subscribe(res => {
       this.titleOptions = res;
-      this.pageLength = this.titleOptions.length
     });
   }
 

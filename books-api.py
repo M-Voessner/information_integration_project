@@ -182,6 +182,7 @@ def disp():
     skip = 0
     try:
         args = request.args
+        print(args)
         title = args.get('title')
         author = args.get('author')
         average_rating = args.get('average_rating')
@@ -191,7 +192,7 @@ def disp():
         price = args.get('price')
         first = args.get('first')
         skip = args.get('skip')
-        sql = """SELECT * FROM BOOKS b 
+        sql = """SELECT *, count(*) OVER() AS full_count FROM BOOKS b 
             LEFT JOIN GENRE_GROUPS gg ON b.book_id = gg.book_id
             LEFT JOIN GENRES ge ON ge.genre_id = gg.genre_id
             """
@@ -199,11 +200,11 @@ def disp():
         where = []
         
         if (title):
-            where.append("""title = %(title)s""")
-            sqlparams['title'] = title
+            where.append("""title LIKE %(title)s""")
+            sqlparams['title'] = '%{}%'.format(title)
         if (author):
-            where.append("""author = %(author)s""")
-            sqlparams['author']=author
+            where.append("""author LIKE %(author)s""")
+            sqlparams['author']='%{}%'.format(author)
         if (average_rating):
             where.append("""average_rating = %(average_rating)s""")
             sqlparams['average_rating']=average_rating
@@ -222,15 +223,19 @@ def disp():
         if where:
             sql = '{} WHERE {}'.format(sql, ' AND '.join(where))
         sql += """LIMIT %(first)s OFFSET %(skip)s"""
+        
         sqlparams['first'] = first
         sqlparams['skip'] = skip
         _sql = sql,sqlparams
+        print(_sql)
         params = config()
         conn = gres.connect(**params)
         conn.autocommit = True
         cur = conn.cursor()
+        
         cur.execute(*_sql)
         books = cur.fetchall()
+        print(books)
         result = []
         
         for row in books:
@@ -252,6 +257,7 @@ def disp():
             temp['publication_date'] = row[14]
             temp['cover'] = row[15]
             temp['genre'] = row[19]
+            temp['result_count'] = row[20]
             result.append(temp)
         return jsonify(result)
     except (Exception, gres.DatabaseError) as error:
