@@ -186,6 +186,7 @@ def disp():
         title = args.get('title')
         author = args.get('author')
         average_rating = args.get('average_rating')
+        sign = args.get('sign')
         genre_name = args.get('genre_name')
         date = args.get('date')
         page_count = args.get('page-count')
@@ -206,8 +207,8 @@ def disp():
             where.append("""author LIKE %(author)s""")
             sqlparams['author']='%{}%'.format(author)
         if (average_rating):
-            where.append("""average_rating = %(average_rating)s""")
-            sqlparams['average_rating']=average_rating
+            where.append("""average_rating """ + sign +  """ %(average_rating)s""")
+            sqlparams['average_rating'] = average_rating 
         if (genre_name):
             where.append("""genre_name = %(genre_name)s""")
             sqlparams['genre_name']=genre_name

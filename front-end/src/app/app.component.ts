@@ -57,6 +57,9 @@ export class AppComponent implements OnInit {
   bookTitle?: string;
   bookAuthor?: string;
   bookRating?: number;
+  ratingRadioButton = '=';
+
+
   bookGenre?: string;
   genreOptions: DropDownOption[] = [];
   url = 'http://localhost:5000/';
@@ -185,7 +188,7 @@ export class AppComponent implements OnInit {
       url += 'genre_name=' + this.bookGenre + '&';
     }
     if (this.bookRating) {
-      url += 'average_rating=' + this.bookRating + '&';
+      url += 'average_rating=' + this.bookRating + '&' + 'sign=' + this.ratingRadioButton + '&';
     } 
     url += 'first=' + this.pageSize + '&' + 'skip=' + this.pageSize * this.pageIndex;
     console.log(url)

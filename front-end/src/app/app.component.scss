@@ -1,57 +1,81 @@
 .example-form-field {
-    width: 14vw;
-    padding: 20px
-  }
+  width: 14vw;
+  padding: 25px
+}
 
-  table {
-    width: 100%;
-  }
-  
-  tr.example-detail-row {
-    height: 0;
-  }
-  
-  tr.example-element-row:not(.example-expanded-row):hover {
-    background: rgb(58, 52, 52);
-  }
-  
-  tr.example-element-row:not(.example-expanded-row):active {
-    background: rgb(58, 52, 52);
-  }
-  
-  .example-element-row td {
-    border-bottom-width: 0;
-  }
-  
-  .example-element-detail {
-    overflow: hidden;
-    display: flex;
-  }
-  
-  .example-element-diagram {
-    min-width: 80px;
-    padding: 8px;
-    font-weight: lighter;
-    margin: 8px 0;
-    height: fit-content
-  }
-  
-  .example-element-symbol {
-    font-weight: bold;
-    font-size: 40px;
-    line-height: normal;
-  }
-  
-  .example-element-description {
-    padding: 16px;
-  }
-  
-  .example-element-description-attribution {
-    opacity: 0.5;
-  }
+.rating {
+  display: flex;
+  flex-direction: column;
+  width: 14vw;
+  padding: 25px
+}
+
+.radio-button {
+  margin-left: 70px;
+}
+
+.mat-radio-button {
+  padding-right: 10px;
+}
+
+
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0px;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: rgb(58, 52, 52);
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: rgb(58, 52, 52);
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: fit-content
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
 
 .mat-raised-button {
   margin: 10px;
+}
+
+tr.mat-row {
+  height: 100px;
+}
+
+td.mat-cell {
+  font-size: large;
 }
 
 .mat-input-element {
@@ -62,4 +86,10 @@
   position: fixed;
   bottom: 0;
   width: 100%;
+}
+
+.mat-column-description {
+  flex: none;
+  width: 700px;
+  overflow: hidden;
 }
