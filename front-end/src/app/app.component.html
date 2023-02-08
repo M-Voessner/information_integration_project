@@ -91,9 +91,7 @@
               Chart showing the number of books published each year 
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <ng-template matExpansionPanelContent>
-            <canvasjs-chart [options]="columnChartOptions" (chartInstance)="getYearChartInstance($event)"></canvasjs-chart>
-          </ng-template>
+          <p-chart type="line" [data]="yearData" [options]="lineChartOptions"></p-chart>
         </mat-expansion-panel>
         <mat-expansion-panel>
           <mat-expansion-panel-header>
@@ -104,9 +102,29 @@
               Chart showing the number of books per rating 
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <ng-template matExpansionPanelContent>
-            <canvasjs-chart [options]="pieChartOptions" (chartInstance)="getRateChartInstance($event)"></canvasjs-chart>
-          </ng-template>
+          <p-chart type="bar" [data]="rateData" [options]="vertBarChartOptions"></p-chart>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Ratings - Detailed
+            </mat-panel-title>
+            <mat-panel-description>
+              Chart showing the number of books per more detailed rating
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <p-chart type="bar" [data]="rateStackData" [options]="stackedChartOptions"></p-chart>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Overview
+            </mat-panel-title>
+            <mat-panel-description>
+              Chart showing an overview of book data
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <p-chart type="doughnut" [data]="infoData" [options]="doughChartOptions" [style]="{'width': '40%'}"></p-chart>
         </mat-expansion-panel>
       </mat-accordion>
     </mat-expansion-panel>

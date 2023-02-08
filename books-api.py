@@ -322,6 +322,56 @@ def getRateData():
         if conn is not None:
             conn.close()
 
+@app.route('/chart_rates_detail', methods = ['GET'])
+def getRateStackData():
+    conn = None
+    try:
+        sql = """
+        SELECT TRUNC(average_rating) AS index, TRUNC(average_rating, 1) AS Rating, COUNT(average_rating)
+        FROM books
+        GROUP BY Rating, index
+        ORDER BY Rating 
+        """
+        params = config()
+        conn = gres.connect(**params)
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute(sql)
+        data = cur.fetchall()
+        result = []
+        for r in data:
+            result.append((r[0], r[1], r[2]))
+        return jsonify(result)
+    except (Exception, gres.DatabaseError) as error:
+        print('FAILED: %s' % error , flush=True)
+    finally:
+        if conn is not None:
+            conn.close()
+
+@app.route('/chart_info', methods = ['GET'])
+def getInfoChartData():
+    conn = None
+    try:
+        sql = """
+        SELECT COUNT(DISTINCT(title)) AS title_count, COUNT(DISTINCT(author)) AS author_count 
+        FROM books
+        """
+        params = config()
+        conn = gres.connect(**params)
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute(sql)
+        data = cur.fetchall()
+        result = []
+        for r in data:
+            result.append((r[0], r[1]))
+        return jsonify(result)
+    except (Exception, gres.DatabaseError) as error:
+        print('FAILED: %s' % error , flush=True)
+    finally:
+        if conn is not None:
+            conn.close()
+
 # driver function
 if __name__ == '__main__':
 

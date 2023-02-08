@@ -81,69 +81,65 @@ export class AppComponent implements OnInit {
 
   showPagination = true;
 
-  yearChart: any;
-  rateChart: any;
-  pieData: any[] = [];
-  columnData: any[] = [];
-  columnChartOptions = {
-    animtionEnabled: true,
-    title: {
-      text: '',
-    },
-    data: [
-      {
-        type: 'line',
-        dataPoints: this.columnData,
-      },
-    ],
+  rateData: any;
+  yearData: any;
+  rateStackData: any;
+  infoData: any;
+
+  lineChartOptions = {
+    plugins: {
+      legend: {
+        labels: {
+          color: '#495057'
+        }
+      }
+    }
   };
 
-  pieChartOptions = {
-    animtionEnabled: true,
-    title: {
-      text: '',
-    },
-    data: [
-      {
-        type: 'pie',
-        dataPoints: this.pieData,
-      },
-    ],
-  };
-  yearChart: any;
-  rateChart: any;
-  pieData: any[] = [];
-  columnData: any[] = [];
-  columnChartOptions = {
-    animtionEnabled: true,
-    title: {
-      text: '',
-    },
-    data: [
-      {
-        type: 'line',
-        dataPoints: this.columnData,
-      },
-    ],
+  vertBarChartOptions = {
+    plugins: {
+      legend: {
+        labels: {
+          color: '#495057'
+        }
+      }
+    }
   };
 
-  pieChartOptions = {
-    animtionEnabled: true,
-    title: {
-      text: '',
+  stackedChartOptions = {
+    tooltips: {
+      mode: 'index',
+      intersect: false
     },
-    data: [
-      {
-        type: 'pie',
-        dataPoints: this.pieData,
-      },
-    ],
+    responsive: true,
+    scales: {
+      xAxes: [{
+        stacked: true,
+      }],
+      yAxes: [{
+        stacked: true,
+      }]
+    }
   };
+
+  doughChartOptions = {
+    plugins: {
+      legend: {
+        labels: {
+          color: '#ebedef'
+        }
+      }
+    },
+    responsive: true
+  };
+
   constructor(private http: HttpClient) {
 
     this.sortedBooks = this.books?.slice();
     this.getYearChartInstance();
     this.getRateChartInstance();
+    this.getRateStackChartInstance();
+    this.getInfoChartInstance();
   }
 
 
@@ -291,37 +287,138 @@ export class AppComponent implements OnInit {
     })
   };
 
+
   getYearChartInstance() {
     this.loadYearData();
   }
 
+  
   getRateChartInstance() {
-
     this.loadRateData();
+  }
+  
+  getRateStackChartInstance() {
+    this.loadRateStackData();
+  }
+
+  getInfoChartInstance() {
+    this.loadInfoData();
   }
 
   async loadRateData() {
     let url = this.url + 'chart_rates';
+    let newLabels:any[] = [];
+    let newPoints:any[] = [];
     this.http.get<any[]>(url).subscribe( res => {
-      res.forEach( (val:any[], index: number) => {
-        this.pieData[index] = {label: val[0], y: parseInt(val[1])};
-      });
+      if (res) {
+        res.forEach( (val:any[]) => {
+          newLabels.push(val[0]);
+          newPoints.push(val[1]);
+        });
+      }
     });
-    if (this.rateChart) {
-      this.rateChart.render();
+    this.rateData = {
+      labels: newLabels,
+      datasets: [
+        {
+          label: 'amount of books',
+          data: newPoints,
+          backgroundColor: '#42A5F5',
+          tension: .5,
+        },
+      ]
+    };
+  }
+
+
+  async loadRateStackData() {
+    let url = this.url + 'chart_rates_detail';
+    let newdata:any[] = [];
+    let newPoints: Array<Array<any>> = [[], [], [], [], [], [], []];
+    let coloring = ['#42A5F5', '#33cc33', '#cccc00', '#ff6666', '#cc33ff', '#33cccc', '#cc44cc'];
+    let getIndex = (value:any):number => {
+      let ind = parseInt(value);
+      if (ind < 6 && ind > -1) {
+        return ind;
+      } 
+      return 6;
     }
+    this.http.get<any[]>(url).subscribe( res => {
+      if (res) {
+        res.forEach( (val:any[]) => {
+          let temp = newPoints[getIndex(val[0])];
+          temp.push(val[2]);
+        });
+        newPoints.forEach( (val:any[], i:number) =>{
+          let set = {
+            type: 'bar',
+            label: (i == 6) ? "no rating" : i.valueOf(),
+            backgroundColor: coloring.pop(),
+            data: val
+          };
+          newdata.push(set);
+        });
+      }
+    });
+    this.rateStackData = {
+      labels: ['.0', '.1', '.2', '.3', '.4', '.5', '.6', '.7', '.8', '.9'],
+      datasets: newdata
+    };
   }
 
   async loadYearData() {
     let url = this.url + 'chart_years';
+    let newLabels:any = [];
+    let newPoints:any[] = [];
     this.http.get<any[]>(url).subscribe( res => {
-      res.forEach( (val:any[]) => {
-        this.columnData.push({x: parseInt(val[0]), y: parseInt(val[1])});
-      });
+      if (res) {
+        res.forEach( (val:any[]) => {
+          newLabels.push(val[0]);
+          newPoints.push(val[1]);
+        });
+      }
     });
-    if (this.yearChart) {
-      this.yearChart.render();
-    }
+    this.yearData = {
+      labels: newLabels,
+      datasets: [
+        {
+          label: 'amount of books',
+          data: newPoints,
+          fill: false,
+          borderColor: '#42A5F5',
+          tension: .5,
+        },
+      ]
+    };
+  }
+
+  async loadInfoData() {
+    let url = this.url + 'chart_info';
+    let newData:number[] = [];
+    this.http.get<any[]>(url).subscribe( res => {
+      if (res) {
+        res.forEach((val:any[]) => {
+          newData.push(val[0]);
+          newData.push(val[1]);
+        });
+      }
+    });
+    this.infoData = {
+      labels: ['Titles', 'Authors'],
+      datasets: [
+        {
+          data: newData,
+          backgroundColor: [
+            '#42A5F5', 
+            '#00F542'
+          ],
+          hoverBackgroundColor: [
+            '#42A5F5', 
+            '#00F542'
+          ]
+        },
+      ]
+    };
   }
 
   private _filterTitles(value: string): string[] {

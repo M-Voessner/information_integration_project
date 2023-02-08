@@ -16,19 +16,18 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatRadioModule} from '@angular/material/radio';
-import * as CanvasJSAngularChart from '../assets/canvasjs.angular.component';
-var CanvasChart = CanvasJSAngularChart.CanvasJSChart;
+import {MatRadioModule} from '@angular/material/radio';;
+import {ChartModule} from 'primeng/chart';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    CanvasChart,
   ],
   imports: [
     BrowserAnimationsModule,
     BrowserModule,
+    ChartModule,
     MatInputModule,
     FormsModule,
     MatIconModule,
