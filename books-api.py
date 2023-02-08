@@ -7,8 +7,6 @@ from flask_cors import CORS
 import main
 from NYTimesExtractor import NYTimesExtractor
 
-main.main()
-
 # creating a Flask app
 app = Flask(__name__)
 CORS(app)
