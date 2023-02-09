@@ -1,4 +1,4 @@
-<div style="background-color: rgb(46, 73, 160)">
+<div class="header" style="background-color: rgb(46, 73, 160)">
   <h2 style="color: white">Book Reviews</h2>
   <mat-form-field class="example-form-field">
     <mat-label>Book title</mat-label>
@@ -73,7 +73,7 @@
 
   <br>
   <button mat-raised-button (click)="search()">Search</button>
-  <button mat-button style="float:right; margin-right: 20px;"(click)="loadData()">Load Data into Database</button>
+  <button mat-button style="float:right; margin-left: 40px;"(click)="loadData()">Load Data into Database</button>
 </div>
 <div *ngIf="loading">
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>

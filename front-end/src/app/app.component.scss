@@ -3,6 +3,10 @@
   padding: 25px
 }
 
+.header {
+  display: flex;
+}
+
 .rating {
   display: flex;
   flex-direction: column;
@@ -68,6 +72,11 @@ tr.example-element-row:not(.example-expanded-row):active {
 
 .mat-raised-button {
   margin: 10px;
+  width: 80px;
+  height: 80px;
+  align-self: center;
+  color: white;
+  background-color: firebrick;
 }
 
 tr.mat-row {
