@@ -69,7 +69,7 @@ export class AppComponent implements OnInit {
   
   
   sortedBooks: BookResponse[];
-  displayedColumns: string[] = ['title', 'author', 'average_rating','genre', 'description', 'price', 'publication_date'];
+  displayedColumns: string[] = ['title', 'author', 'average_rating','genre', 'description', 'publication_date'];
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand']
   expandedReview?: BookResponse | null;
   
