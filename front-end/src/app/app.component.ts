@@ -57,6 +57,8 @@ export class AppComponent implements OnInit {
   bookTitle?: string;
   bookAuthor?: string;
   bookRating?: number;
+  bookYear?: number;
+  yearRadioButton = '=';
   ratingRadioButton = '=';
 
 
@@ -215,12 +217,14 @@ export class AppComponent implements OnInit {
       url += 'genre_name=' + this.bookGenre + '&';
     }
     if (this.bookRating) {
-      url += 'average_rating=' + this.bookRating + '&' + 'sign=' + this.ratingRadioButton + '&';
+      url += 'average_rating=' + this.bookRating + '&' + 'rating-sign=' + this.ratingRadioButton + '&';
+    }
+    if (this.bookYear) {
+      const filterDate = this.bookYear + '-01-01 00:00:00'
+      url += 'date=' + filterDate + '&' + 'year-sign=' + this.yearRadioButton + '&';
     } 
     url += 'first=' + this.pageSize + '&' + 'skip=' + this.pageSize * this.pageIndex;
-    console.log(url)
     this.http.get<BookResponse[]>(url).subscribe(res => {
-      console.log(res);
       this.books = res;
       this.loading = false;
       if (this.books) {

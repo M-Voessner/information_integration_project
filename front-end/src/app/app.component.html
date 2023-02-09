@@ -36,9 +36,9 @@
       </button>
     </mat-form-field>
     <mat-radio-group aria-label="Select an option" class="radio-button col" [(ngModel)]="ratingRadioButton">
-      <mat-radio-button value=">">></mat-radio-button>
-      <mat-radio-button value="=">=</mat-radio-button>
-      <mat-radio-button value="<"><</mat-radio-button>
+      <mat-radio-button value=">">> {{bookRating}}</mat-radio-button>
+      <mat-radio-button value="=">= {{bookRating}}</mat-radio-button>
+      <mat-radio-button value="<">< {{bookRating}}</mat-radio-button>
     </mat-radio-group>
   </div>
 
@@ -55,12 +55,20 @@
     </button>
   </mat-form-field>
 
-  <mat-form-field class="example-form-field" appearance="fill">
-    <mat-label>Published after</mat-label>
-    <input matInput [matDatepicker]="picker">
-    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
+  <div class="row rating">
+    <mat-form-field class="col">
+      <mat-label>Publication Year</mat-label>
+      <input matInput type="number" [(ngModel)]="bookYear">
+      <button *ngIf="bookYear" matSuffix mat-icon-button aria-label="Clear" (click)="bookYear=undefined">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+    <mat-radio-group aria-label="Select an option" class="radio-button col" [(ngModel)]="yearRadioButton">
+      <mat-radio-button value=">">> {{bookYear}}</mat-radio-button>
+      <mat-radio-button value="=">= {{bookYear}}</mat-radio-button>
+      <mat-radio-button value="<">< {{bookYear}}</mat-radio-button>
+    </mat-radio-group>
+  </div>
 
 
   <br>
