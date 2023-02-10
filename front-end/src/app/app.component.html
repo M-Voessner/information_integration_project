@@ -179,14 +179,52 @@
     </td>
   </ng-container>
   <ng-container matColumnDef="expandedDetail">
-    <td mat-cell *matCellDef="let element" [attr.colspan]="sortedBooks.length">
+    <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumnsWithExpand.length">
       <div class="example-element-detail" [@detailExpand]="element == expandedReview ? 'expanded' : 'collapsed'">
-        <div class="example-element-diagram">
+        <span class="expanded-contents">
+          <h2>Title:</h2>
+          <div class="example-element-name"> {{element.title}} </div>
+          <br>
+          <h2>Author:</h2>
+          <div class="example-element-name"> {{element.author}} </div>
+          <br>
+          <h2>ISBN:</h2>
+          <div class="example-element-name"> {{element.ISBN13}} </div>
+          <br>
+          <h2>Rating:</h2>
+          <div class="example-element-name"> {{element.average_rating}} </div>
+          <br>
+          <h2>Price:</h2>
+          <div class="example-element-name"> {{element.price}} {{element.currency}} </div>
+          <br>
+          <h2>Publisher:</h2>
+          <div class="example-element-name"> {{element.publisher}} </div>
+          <br>
+          <h2>Language:</h2>
+          <div class="example-element-name"> {{element.language}} </div>
+          <br>
+          <h2>Publication Date:</h2>
+          <div class="example-element-name"> {{element.publication_date}} </div>
+          <br>
+          <h2>Genre:</h2>
+          <div class="example-element-name"> {{element.genre}} </div>
+          <br>
+          <h2>Page count:</h2>
+          <div class="example-element-name"> {{element.page_count}} </div>
+          <br>
+          <h2>Review Url:</h2>
+          <div class="example-element-name"> {{element.review_url}} </div>
+          <br>
+        </span>
+        <span class="expanded-contents">
+          <h2>Review:</h2>
           <div class="example-element-name"> {{element.review}} </div>
-        </div>
+        </span>
       </div>
     </td>
+    
   </ng-container>
+  
   <tr mat-header-row *matHeaderRowDef="displayedColumnsWithExpand"></tr>
   <tr mat-row *matRowDef="let element; columns: displayedColumnsWithExpand;" class="example-element-row"
     [class.example-expanded-row]="expandedReview === element"
