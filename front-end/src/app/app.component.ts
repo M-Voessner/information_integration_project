@@ -175,7 +175,7 @@ export class AppComponent implements OnInit {
     this.http.get<any>(url).subscribe(res => {
       if (res.success == true) {
         console.log('Success');
-        this.search()
+        this.ngOnInit()
       }
       this.loading = false;
     });
